@@ -1,4 +1,5 @@
 import CredentialManager from './CredentialManager';
+import { mapToPasskeysCreationResponse, mapToPasskeysAuthenticationResponse } from './utils/mapper';
 
 /**
  * Class to manage Twilio Passkeys SDKs
@@ -15,13 +16,31 @@ class TwilioPasskeys {
      * @param {string} challengePayload
      * @returns {Promise<CreatePasskeysResult>}
      */
-    create(challengePayload) {}
+    async create(challengePayload) {
+        let result = new CreatePasskeysResult();
+        try {
+            let credential = await this.credentialManager.createCredential(challengePayload);
+            result.Success = mapToPasskeysCreationResponse(credential);
+        } catch (error) {
+            result.Error = error;
+        }
+        return result;
+    }
 
     /**
      * @param {string} challengePayload
      * @returns {Promise<AuthenticatePasskeysResult>}
     */
-    authenticate(challengePayload) {}
+    async authenticate(challengePayload) {
+        let result = new AuthenticatePasskeysResult();
+        try {
+            let credential = await this.credentialManager.getCredential(challengePayload);
+            result.Success = mapToPasskeysAuthenticationResponse(credential);
+        } catch (error) {
+            result.Error = error;
+        }
+        return result;
+    }
 }
 
 export default TwilioPasskeys;
