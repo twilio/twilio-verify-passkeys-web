@@ -1,4 +1,10 @@
+/**
+ * 
+ * @param {ArrayBuffer} buffer 
+ * @returns string
+ */
 const ArrayBufferToBase64 = (buffer) => {
+    //@ts-ignore
     const binary = String.fromCharCode.apply(null, new Uint8Array(buffer));
     let base64String = btoa(binary);
 
@@ -7,6 +13,11 @@ const ArrayBufferToBase64 = (buffer) => {
     return base64String;
 }
 
+/**
+ * 
+ * @param {string} string 
+ * @returns {ArrayBuffer}
+ */
 const StringToArrayBuffer = (string) => {
     const decodedString = atob(string);
 

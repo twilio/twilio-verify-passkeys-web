@@ -10,7 +10,7 @@ class CredentialManager {
      * Create a new credential with the web authn API
      * requestResponse: the response from the server
      * @param {string} requestResponse 
-     * @returns {Promise<Credential>}
+     * @returns {Promise<?Credential>}
      */
     async createCredential(requestResponse) {
         const createCredentialDefaultArgs = {
@@ -24,7 +24,7 @@ class CredentialManager {
      * Get the credential with the web authn API
      * requestResponse: the response from the server
      * @param {string} requestResponse
-     * @returns {Promise<Credential>}
+     * @returns {Promise<?Credential>}
     */
     async getCredential(requestResponse) {
         const authenticationRequest = mapToPasskeyAuthenticationPayload(requestResponse);

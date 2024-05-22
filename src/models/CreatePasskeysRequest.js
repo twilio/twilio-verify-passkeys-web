@@ -11,18 +11,12 @@
  * @property {string} displayName
  */
 
-/**
- * @typedef {Object} PubKeyCredParam
- * @property {string} type
- * @property {number} alg
- */
-
 /** 
  * @typedef {Object} AuthenticatorSelection
- * @property {string} authenticatorAttachment
+ * @property {AuthenticatorAttachment} authenticatorAttachment
  * @property {boolean} requireResidentKey
- * @property {string} residentKey
- * @property {string} userVerification
+ * @property {ResidentKeyRequirement} residentKey
+ * @property {UserVerificationRequirement} userVerification
 */
 
 
@@ -31,8 +25,8 @@
  * @property {ArrayBuffer} challenge
  * @property {Rp} rp
  * @property {User} user
- * @property {[]PubKeyCredParam} pubKeyCredParams
+ * @property {Array<PublicKeyCredentialParameters>} pubKeyCredParams
  * @property {number} timeout
- * @property {string} attestation
+ * @property {AttestationConveyancePreference} attestation
  * @property {AuthenticatorSelection} authenticatorSelection
  */

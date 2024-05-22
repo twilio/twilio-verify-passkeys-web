@@ -1,17 +1,10 @@
 /**
- * @typedef {Object} KeyCredential
- * @property {string} id
- * @property {string} type
- * @property {[]string} transports
- */
-
-/**
  * @typedef {Object} AuthenticatePasskeyRequestPublicKey
- * @property {string} challenge
+ * @property {Uint8Array} challenge
  * @property {string} rpId
  * @property {number} timeout
- * @property {[]KeyCredential} allowCredentials
- * @property {string} userVerification
+ * @property {Array<PublicKeyCredentialDescriptor>} allowCredentials
+ * @property {UserVerificationRequirement} userVerification
  */
 
 /**

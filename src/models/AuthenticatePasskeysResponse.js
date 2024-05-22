@@ -3,7 +3,7 @@ class AuthenticatePasskeysResponse {
      * 
      * @param {string} id 
      * @param {string} rawId 
-     * @param {string} authenticatorAttachment 
+     * @param {?string} authenticatorAttachment 
      * @param {string} type 
      * @param {string} clientDataJSON 
      * @param {string} authenticatorData 

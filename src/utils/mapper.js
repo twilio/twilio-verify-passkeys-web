@@ -1,4 +1,4 @@
-import { ArrayBufferToBase64 } from './converters.js';
+import { ArrayBufferToBase64, StringToArrayBuffer } from './converters.js';
 
 /**
  * @param {string} challengePayload
@@ -16,10 +16,10 @@ const mapToPasskeyCreationPayload = (challengePayload) => {
     } = JSON.parse(challengePayload)
 
     return {
-        challenge: StringToBuffer(challenge),
+        challenge: StringToArrayBuffer(challenge),
         rp: rp,
         user: {
-            id: StringToBuffer(user.id),
+            id: StringToArrayBuffer(user.id),
             name: user.name,
             displayName: user.displayName
         },
@@ -32,11 +32,12 @@ const mapToPasskeyCreationPayload = (challengePayload) => {
 
 /**
  * 
- * @param {Credential} credential
+ * @param {PublicKeyCredential} credential
  * @returns {CreatePasskeysResponse}
  */
 const mapToPasskeysCreationResponse = (credential) => {
     const { id, rawId, response, type, authenticatorAttachment } = credential;
+    // @ts-ignore
     const { attestationObject, clientDataJSON } = response;
 
     return new CreatePasskeysResponse(
@@ -68,8 +69,14 @@ const mapToPasskeyAuthenticationPayload = (challengePayload) => {
     }
 }
 
+/**
+ * 
+ * @param {PublicKeyCredential} credential 
+ * @returns 
+ */
 const mapToPasskeysAuthenticationResponse = (credential) => {
     const { id, rawId, response, type, authenticatorAttachment } = credential
+    // @ts-ignore
     const { authenticatorData, clientDataJSON, signature, userHandle } = response
 
     return new AuthenticatePasskeysResponse(

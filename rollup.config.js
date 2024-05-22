@@ -1,3 +1,4 @@
+//@ts-ignore
 import pkg from './package.json' assert { type: "json" };
 
 let formats = ['es', 'cjs', 'umd', 'iife'];

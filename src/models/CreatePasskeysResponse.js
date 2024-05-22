@@ -2,7 +2,7 @@ class CreatePasskeysResponse {
     /**
      * @param {string} id 
      * @param {string} rawId 
-     * @param {string} authenticatorAttachment 
+     * @param {?string} authenticatorAttachment 
      * @param {string} type 
      * @param {string} attestationObject 
      * @param {string} clientDataJSON 

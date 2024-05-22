@@ -4,6 +4,9 @@ class AuthenticatePasskeysResult {
          * @type {?AuthenticatePasskeysResponse}
          */
         this.Success = null;
+        /**
+         * @type {unknown}
+         */
         this.Error = null;
     }
 }
