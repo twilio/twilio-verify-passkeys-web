@@ -31,13 +31,12 @@ const mapToPasskeyCreationPayload = (challengePayload) => {
 }
 
 /**
- * 
- * @param {PublicKeyCredential} credential
+ * @param {?Credential} credential
  * @returns {CreatePasskeysResponse}
  */
 const mapToPasskeysCreationResponse = (credential) => {
-    const { id, rawId, response, type, authenticatorAttachment } = credential;
     // @ts-ignore
+    const { id, rawId, response, type, authenticatorAttachment } = credential;
     const { attestationObject, clientDataJSON } = response;
 
     return new CreatePasskeysResponse(
@@ -71,12 +70,12 @@ const mapToPasskeyAuthenticationPayload = (challengePayload) => {
 
 /**
  * 
- * @param {PublicKeyCredential} credential 
- * @returns 
+ * @param {?Credential} credential 
+ * @returns {AuthenticatePasskeysResponse}
  */
 const mapToPasskeysAuthenticationResponse = (credential) => {
-    const { id, rawId, response, type, authenticatorAttachment } = credential
     // @ts-ignore
+    const { id, rawId, response, type, authenticatorAttachment } = credential
     const { authenticatorData, clientDataJSON, signature, userHandle } = response
 
     return new AuthenticatePasskeysResponse(
