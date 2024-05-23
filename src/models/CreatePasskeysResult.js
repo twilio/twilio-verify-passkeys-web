@@ -4,6 +4,9 @@ class CreatePasskeysResult {
          * @type {?CreatePasskeysResponse}
          */
         this.Success = null;
+        /**
+         * @type {?Error}
+         */
         this.Error = null;
     }
 }
