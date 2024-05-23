@@ -9,12 +9,12 @@ class CredentialManager {
     /**
      * Create a new credential with the web authn API
      * requestResponse: the response from the server
-     * @param {string} requestResponse 
+     * @param {CreatePasskeysRequest} createRequest 
      * @returns {Promise<?Credential>}
      */
-    async createCredential(requestResponse) {
+    async createCredential(createRequest) {
         const createCredentialDefaultArgs = {
-            publicKey: mapToPasskeyCreationPayload(requestResponse)
+            publicKey: createRequest
         }
 
         let credential = await navigator.credentials.create(createCredentialDefaultArgs);
@@ -23,11 +23,11 @@ class CredentialManager {
     /** 
      * Get the credential with the web authn API
      * requestResponse: the response from the server
-     * @param {string} requestResponse
+     * @param {AuthenticatePasskeysRequest} createRequest
      * @returns {Promise<?Credential>}
     */
-    async getCredential(requestResponse) {
-        const authenticationRequest = mapToPasskeyAuthenticationPayload(requestResponse);
+    async getCredential(createRequest) {
+        const authenticationRequest = createRequest;
         let credential = await navigator.credentials.get(authenticationRequest);
 
         return credential;

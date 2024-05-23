@@ -5,7 +5,7 @@ class AuthenticatePasskeysResult {
          */
         this.Success = null;
         /**
-         * @type {?Error}
+         * @type {unknown}
          */
         this.Error = null;
     }

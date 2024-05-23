@@ -1,5 +1,5 @@
 import CredentialManager from './CredentialManager';
-import { mapToPasskeysCreationResponse, mapToPasskeysAuthenticationResponse } from './utils/mappers';
+import { mapToPasskeysCreationResponse, mapToPasskeysAuthenticationResponse, mapToPasskeyCreationPayload, mapToPasskeyAuthenticationPayload } from './utils/mappers';
 
 /**
  * Class to manage Twilio Passkeys SDKs
@@ -13,11 +13,16 @@ class TwilioPasskeys {
     }
 
     /**
-     * @param {string} challengePayload
+     * @param {string | CreatePasskeysRequest} challengePayload
      * @returns {Promise<CreatePasskeysResult>}
      */
     async create(challengePayload) {
         let result = new CreatePasskeysResult();
+
+        if (typeof(challengePayload) === 'string') {
+            challengePayload = mapToPasskeyCreationPayload(challengePayload)
+        }
+
         try {
             let credential = await this.credentialManager.createCredential(challengePayload);
             result.Success = mapToPasskeysCreationResponse(credential);
@@ -28,11 +33,16 @@ class TwilioPasskeys {
     }
 
     /**
-     * @param {string} challengePayload
+     * @param {string | AuthenticatePasskeysRequest} challengePayload
      * @returns {Promise<AuthenticatePasskeysResult>}
     */
     async authenticate(challengePayload) {
         let result = new AuthenticatePasskeysResult();
+        
+        if (typeof(challengePayload) === 'string') {
+            challengePayload = mapToPasskeyAuthenticationPayload(challengePayload);
+        }
+
         try {
             let credential = await this.credentialManager.getCredential(challengePayload);
             result.Success = mapToPasskeysAuthenticationResponse(credential);
