@@ -1,3 +1,5 @@
+import AuthenticatePasskeysResponse from "./AuthenticatePasskeysResponse";
+
 class AuthenticatePasskeysResult {
     constructor() {
         /**
@@ -10,3 +12,5 @@ class AuthenticatePasskeysResult {
         this.Error = null;
     }
 }
+
+export default AuthenticatePasskeysResult;

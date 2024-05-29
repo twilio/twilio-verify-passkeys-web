@@ -1,5 +1,12 @@
 import CredentialManager from './CredentialManager';
-import { mapToPasskeysCreationResponse, mapToPasskeysAuthenticationResponse, mapToPasskeyCreationPayload, mapToPasskeyAuthenticationPayload } from './utils/mappers';
+import CreatePasskeysResult from './models/CreatePasskeysResult';
+import AuthenticatePasskeysResult from './models/AuthenticatePasskeysResult';
+import { 
+    mapToPasskeysCreationResponse, 
+    mapToPasskeysAuthenticationResponse, 
+    mapToPasskeyCreationPayload, 
+    mapToPasskeyAuthenticationPayload 
+} from './utils/mappers';
 
 /**
  * Class to manage Twilio Passkeys SDKs

@@ -18,3 +18,5 @@ class CreatePasskeysResponse {
         this.transports = transports;
     }
 }
+
+export default CreatePasskeysResponse;

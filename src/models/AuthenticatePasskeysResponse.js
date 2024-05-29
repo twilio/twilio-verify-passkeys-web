@@ -21,3 +21,5 @@ class AuthenticatePasskeysResponse {
         this.userHandle = userHandle;
     }
 }
+
+export default AuthenticatePasskeysResponse;
