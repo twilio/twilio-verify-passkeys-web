@@ -58,12 +58,12 @@ const mapToPasskeysCreationResponse = (credential) => {
  * @returns {AuthenticatePasskeysRequest}
  */
 const mapToPasskeyAuthenticationPayload = (challengePayload) => {
-    const { challenge, rpId, allowCredentials, userVerification } = JSON.parse(challengePayload).publicKey
+    const { challenge, rpId, allowCredentials, userVerification, timeout } = JSON.parse(challengePayload).publicKey
     return {
         publicKey: {
             challenge: Uint8Array.from(atob(challenge), c => c.charCodeAt(0)),
             rpId: rpId,
-            timeout: 60000,
+            timeout: timeout,
             allowCredentials: allowCredentials,
             userVerification: userVerification
         }
