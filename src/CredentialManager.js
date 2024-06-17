@@ -1,5 +1,3 @@
-import { mapToPasskeyCreationPayload, mapToPasskeyAuthenticationPayload } from "./utils/mappers";
-
 /**
  * Class to manage credentials with the web authn API
  */

@@ -1,3 +1,5 @@
+import CreatePasskeysResponse from "./CreatePasskeysResponse";
+
 class CreatePasskeysResult {
     constructor() {
         /**
@@ -10,3 +12,5 @@ class CreatePasskeysResult {
         this.Error = null;
     }
 }
+
+export default CreatePasskeysResult;
