@@ -36,7 +36,7 @@ describe("Testing Behavior of class", () => {
         expect(twilioPasskeys.authenticate).toBeDefined();
     });
 
-    it("Should return same values for create in with boths payloads", async () => {
+    it("Should return same values for create in with both payloads", async () => {
         const createPasskeyResponseJson = await twilioPasskeys.create(createPayload)
         const createPasskeyResponseClass = await twilioPasskeys.create(createPasskeyRequest)
 
@@ -51,7 +51,7 @@ describe("Testing Behavior of class", () => {
         expect(createPasskeyResponseJson.Success).toEqual(createPasskeyResponseClass.Success);
     });
 
-    it("Should return same values for authenticate in with boths payloads", async () => {
+    it("Should return same values for authenticate in with both payloads", async () => {
         const authenticatePasskeyResponseJson = await twilioPasskeys.authenticate(authenticatePayload)
         const authenticatePasskeyResponseClass = await twilioPasskeys.authenticate(authenticatePasskeyRequest)
 
