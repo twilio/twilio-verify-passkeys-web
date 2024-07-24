@@ -29,8 +29,8 @@ workflows:
     jobs:
       - test
   build_sdk:
-    requires:
-      - test_sdk
     jobs:
-      - build
-      
+      - test
+      - build:
+          requires:
+            - test
