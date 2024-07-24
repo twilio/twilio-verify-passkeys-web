@@ -25,13 +25,12 @@ jobs:
           name: Build
           command: npm run build
 workflows:
-  test_my_app:
+  test_sdk:
     jobs:
       - test
-  test_and_build_my_app:
+  build_sdk:
+    requires:
+      - test_sdk
     jobs:
-      - test
-      - build:
-          requires:
-            - test
+      - build
       
