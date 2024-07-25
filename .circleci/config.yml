@@ -1,0 +1,36 @@
+version: 2.1
+
+orbs:
+  node: circleci/node@5.2.0
+
+jobs:
+  test:
+    executor: node/default
+    steps:
+      - checkout
+      - run:
+          name: Install dependencies
+          command: npm install
+      - run:
+          name: Run tests
+          command: npm run test
+  build:
+    executor: node/default
+    steps:
+      - checkout
+      - run:
+          name: Install dependencies
+          command: npm install
+      - run:
+          name: Build
+          command: npm run build
+workflows:
+  test_sdk:
+    jobs:
+      - test
+  build_sdk:
+    jobs:
+      - test
+      - build:
+          requires:
+            - test
