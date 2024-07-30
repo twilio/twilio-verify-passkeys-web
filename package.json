@@ -1,26 +1,61 @@
 {
-  "name": "twilio-verify-passkeys-web",
+  "name": "@twilio/twilio-verify-passkeys-web",
   "version": "0.0.1",
-  "description": "",
-  "main": "./src/TwilioPasskeys.js",
+  "description": "Twilio Passkeys Web SDK enables developers to easily add Passkeys into their existing authentication flows within their own web applications. The Verify Passkeys SDK supports passkeys creation and authentication using the FIDO/WebAuthn industry standard.",
+  "main": "dist/@twilio/twilio-verify-passkeys-web.cjs.js",
+  "module": "dist/@twilio/twilio-verify-passkeys-web.es.js",
   "type": "module",
   "scripts": {
     "build": "rollup --config",
-    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js ./src"
+    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js ./src",
+    "coverage": "node --experimental-vm-modules node_modules/jest/bin/jest.js --coverage ./src",
+    "release": "release-it"
   },
-  "author": "",
-  "license": "ISC",
+  "keywords": [
+    "twilio",
+    "verify",
+    "passkeys",
+    "webauthn",
+    "fido",
+    "web"
+  ],
+  "repository": "https://github.com/twilio/twilio-verify-passkeys-web",
+  "homepage": "https://github.com/twilio/twilio-verify-passkeys-web#readme",
+  "author": "Twilio Inc.",
+  "license": "Apache-2.0",
   "devDependencies": {
     "@jest/globals": "^29.7.0",
-    "@playwright/test": "^1.45.0",
     "@types/jest": "^29.5.12",
     "@types/node": "^20.14.9",
     "jest": "^29.7.0",
     "jest-environment-jsdom": "^29.7.0",
+    "release-it": "^17.6.0",
     "rollup": "^4.17.2",
     "typescript": "^5.4.5"
   },
   "jest": {
     "transform": {}
+  },
+  "release-it": {
+    "$schema": "https://unpkg.com/release-it/schema/release-it.json",
+    "github": {
+      "release": true
+    },
+    "npm": {
+      "publish": true
+    },
+    "git": {
+      "requireBranch": "main",
+      "commitMessage": "chore(release): ${version}"
+    },
+    "hooks": {
+      "before:init": [
+        "git pull",
+        "npm run test"
+      ],
+      "after:bump": [
+        "npx auto-changelog -p"
+      ]
+    }
   }
 }
