@@ -7,10 +7,10 @@
 * [Requirements](#requirements)
 * [Installation](#installation)
 * [Quickstart](#quickstart)
-* [Running Tests](#running-tests)
 * [Building and Running Sample App](#building-and-running-sample-app)
 * [Project Structure](#project-structure)
 * [Code Structure](#code-structure)
+* [Running Tests](#running-tests)
 
 ## About <a name="about"></a>
 
@@ -94,20 +94,6 @@ The challenge payload for authenticating a user is a JSON with the schema:
 {"publicKey":{"challenge":"WUM...2Mw","timeout":300000,"rpId":"your_backend","allowCredentials":[],"userVerification":"preferred"}}
 ```
 
-## Running Tests <a name="running-tests"></a>
-
-### Running all tests
-
-```
-npm run test
-```
-
-### Running test coverage
-
-```
-npm run coverage
-```
-
 ## Building and Running Sample App <a name="building-and-running-sample-app"></a>
 
 ### Requirements
@@ -176,3 +162,17 @@ The `sample-app` folder contains a simple demo app code. This includes:
 * Vanilla javascript code that works as code snippets for integrating with the Twilio Verify Passkeys SDK
 
 * HTML code that works as UI implementation
+
+## Running Tests <a name="running-tests"></a>
+
+### Running all tests
+
+```
+npm run test
+```
+
+### Running test coverage
+
+```
+npm run coverage
+```
