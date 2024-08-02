@@ -12,6 +12,7 @@
         <script src="https://cdn.jsdelivr.net/npm/intl-tel-input@19.5.3/build/js/intlTelInput.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/@github/webauthn-json@2.1.1/dist/browser-global/webauthn-json.browser-global.min.js"></script>
         <script src="../dist/twilio-verify-passkeys-web.iife.js"></script>
+        <script src="config.js"></script>
         <style>
             body {
                 margin: 0;
@@ -212,11 +213,11 @@
 
         const signIn = async () => {
             try {
-                const response = await fetch(`https://passkey-demo-5706.twil.io/authentication/start`);
+                const response = await fetch(`${API_URL}/authentication/start`);
                 const responseJSON = await response.json();
 
                 twilioPasskeys.authenticate(JSON.stringify(responseJSON)).then(async ({ Success, Error }) => {
-                        const authentication = await fetch('https://passkey-demo-5706.twil.io/authentication/verification', {
+                        const authentication = await fetch(`${API_URL}/authentication/verification`, {
                             method: "POST",
                             headers: {
                                 "Content-Type": "application/json"
@@ -245,7 +246,7 @@
             const username = usernameElement.value
 
             try {
-                const response = await fetch(`https://passkey-demo-5706.twil.io/registration/start`, {
+                const response = await fetch(`${API_URL}/registration/start`, {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json"
@@ -259,7 +260,7 @@
 
                 if (credential.Error != null) throw new Error(credential.Error);
 
-                const verificationResponse = await fetch(`https://passkey-demo-5706.twil.io/registration/verification`, {
+                const verificationResponse = await fetch(`/registration/verification`, {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json"
