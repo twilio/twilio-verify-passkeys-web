@@ -91,7 +91,7 @@ export const createResultPayload = {
     response: {
         attestationObject: StringToArrayBuffer(ATTESTATION_OBJECT),
         clientDataJSON: StringToArrayBuffer(CLIENT_DATA_JSON_CREATE),
-        transports: TRANSPORTS,
+        getTransports: () => TRANSPORTS,
     },
     type: TYPE
 }
