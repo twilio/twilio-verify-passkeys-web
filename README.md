@@ -121,6 +121,7 @@ npm run coverage
 ```
 npm install
 ```
+4. Go to the `config.js` file inside the `sample-app` folder and replace the backend url with your backend url
 3. Run the following command to build and run a local server with the sample app
 ```
 npm run demo
