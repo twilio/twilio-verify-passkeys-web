@@ -55,7 +55,8 @@ const mapToPasskeyCreationPayload = (challengePayload) => {
 const mapToPasskeysCreationResponse = (credential) => {
     // @ts-ignore
     const { id, rawId, response, type, authenticatorAttachment } = credential;
-    const { attestationObject, clientDataJSON, transports } = response;
+    const { attestationObject, clientDataJSON } = response;
+    const transports = response.getTransports();
 
     return new CreatePasskeysResponse(
         id,
