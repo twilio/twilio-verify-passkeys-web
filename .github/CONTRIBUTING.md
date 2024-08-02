@@ -25,7 +25,7 @@ By interacting with the project in any shape or form you are agreeing to the pro
 
 ## Question or Problem?
 
-If you have questions about how to use `twilio-verify-passkeys`, please see our [docs](../README.md), and if you don't find the answer there, please contact [Twilio Support](https://www.twilio.com/help/contact) with any issues you have.
+If you have questions about how to use `twilio-verify-passkeys-web`, please see our [docs](../README.md), and if you don't find the answer there, please contact [Twilio Support](https://www.twilio.com/help/contact) with any issues you have.
 
 ## Issues and Bugs
 
