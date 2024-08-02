@@ -1,0 +1,6 @@
+src/
+.circleci/
+.github/
+coverage/
+rollup.config.js
+tsconfig.json
