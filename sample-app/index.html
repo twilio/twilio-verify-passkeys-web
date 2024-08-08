@@ -28,7 +28,7 @@
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/intl-tel-input@19.5.3/build/css/intlTelInput.css">
         <script src="https://cdn.jsdelivr.net/npm/intl-tel-input@19.5.3/build/js/intlTelInput.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/@github/webauthn-json@2.1.1/dist/browser-global/webauthn-json.browser-global.min.js"></script>
-        <script src="../dist/twilio-verify-passkeys-web.iife.js"></script>
+        <script src="../dist/@twilio/twilio-verify-passkeys-web.iife.js"></script>
         <script src="config.js"></script>
         <style>
             body {
@@ -204,7 +204,7 @@
         const usernameElement = document.getElementById("usr_input");
         const errorElement = document.getElementById("error");
         const continueButton = document.getElementById("continue");
-        window.intlTelInput(usernameElement, {
+        const iti = window.intlTelInput(usernameElement, {
             initialCountry: "us",
             showSelectedDialCode: true,
             utilsScript: "https://cdn.jsdelivr.net/npm/intl-tel-input@19.5.3/build/js/utils.js",
@@ -260,7 +260,7 @@
         }
  
         const signUp = async () => {
-            const username = usernameElement.value
+            const username = iti.getNumber(window.intlTelInputUtils.numberFormat.E164);
 
             try {
                 const response = await fetch(`${API_URL}/registration/start`, {
@@ -277,7 +277,7 @@
 
                 if (credential.Error != null) throw new Error(credential.Error);
 
-                const verificationResponse = await fetch(`/registration/verification`, {
+                const verificationResponse = await fetch(`${API_URL}/registration/verification`, {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json"
