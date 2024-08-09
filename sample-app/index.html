@@ -239,7 +239,18 @@
                             headers: {
                                 "Content-Type": "application/json"
                             },
-                            body: JSON.stringify(Success)
+                            body: JSON.stringify({
+                                id: Success.id,
+                                rawId: Success.rawId,
+                                authenticatorAttachment: Success.authenticatorAttachment,
+                                type: Success.type,
+                                response: {
+                                    authenticatorData: Success.authenticatorData,
+                                    clientDataJSON: Success.clientDataJSON,
+                                    signature: Success.signature,
+                                    userHandle: Success.userHandle
+                                }
+                            })
                         });
 
                         const { status, identity } = await authentication.json();
@@ -282,7 +293,17 @@
                     headers: {
                         "Content-Type": "application/json"
                     },
-                    body: JSON.stringify({...credential.Success})
+                    body: JSON.stringify({
+                        id: credential.Success.id,
+                        rawId: credential.Success.rawId,
+                        authenticatorAttachment: credential.Success.authenticatorAttachment,
+                        type: credential.Success.type,
+                        response: {
+                            attestationObject: credential.Success.attestationObject,
+                            clientDataJSON: credential.Success.clientDataJSON,
+                            transports: credential.Success.transports
+                        }
+                    })
                 });
 
                 const { status } = await verificationResponse.json();

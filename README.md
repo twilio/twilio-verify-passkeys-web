@@ -107,6 +107,7 @@ The challenge payload for authenticating a user is a JSON with the schema:
 ```
 npm install
 ```
+3. Make sure you have setup your [backend](#backend-side-configurations-for-sample-app) 
 4. Go to the `config.js` file inside the `sample-app` folder and replace the backend url with your backend url
 3. Run the following command to build and run a local server with the sample app
 ```
@@ -118,9 +119,11 @@ ngrok http http://localhost:8080
 ```
 5. Open the sample app in your browser using the url that ngrok provides: `https://example.ngrok.app/sample-app/`
 
-### Backend side configurations for sample app
+### Backend side configurations for sample app <a name="backend-side-configurations-for-sample-app"></a>
 
-1. Make sure you already added support for digital asset links in your backend by checking whether an entry with the following structure:
+1. Setup a backend throught the function template of [passkeys-backend](https://github.com/twilio-labs/function-templates/tree/main/passkeys-backend)
+
+2. Make sure you already added support for digital asset links in your backend by checking whether an entry with the following structure:
 ```json
 {
         "relation":[
@@ -133,11 +136,9 @@ ngrok http http://localhost:8080
         }
     },
 ```
-2. Add the origin to your request body using the ngrok url
-```js
-origins: [
-    'https://example.ngrok.app'
-]
+3. Add the ngrok url to the enviroment variables in the field `RELYING_PARTY`
+```
+RELYING_PARTY=example.ngrok.app
 ```
 
 ## Project Structure <a name="project-structure"></a>
