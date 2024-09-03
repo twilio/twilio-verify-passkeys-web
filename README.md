@@ -123,22 +123,28 @@ ngrok http http://localhost:8080
 
 1. Setup a backend throught the function template of [passkeys-backend](https://github.com/twilio-labs/function-templates/tree/main/passkeys-backend)
 
-2. Make sure you already added support for digital asset links in your backend by checking whether an entry with the following structure:
+2. Make sure you already added support for digital asset links, this should be inside a file called `assetlinks.json` in your backend, check whether an entry with the following structure:
 ```json
 {
-        "relation":[
-            "delegate_permission/common.get_login_creds",
-            "delegate_permission/common.handle_all_urls"
-        ],
-        "target":{
-            "namespace": "web",
-            "site": "https://example.ngrok.app"
-        }
-    },
+    "relation":[
+        "delegate_permission/common.get_login_creds",
+        "delegate_permission/common.handle_all_urls"
+    ],
+    "target":{
+        "namespace": "web",
+        "site": "https://example.ngrok.app"
+    }
+},
 ```
-3. Add the ngrok url to the enviroment variables in the field `RELYING_PARTY`
+3. Add the ngrok url to the enviroment variables in the field `RP_DOMAIN` if you are using just this sample app.
 ```
-RELYING_PARTY=example.ngrok.app
+RP_DOMAIN=example.ngrok.app
+```
+
+4. Add the ngrok url to the enviroment variable called `ORIGINS`, using a full url format.
+
+```
+ORIGINS=https://example.ngrok.app
 ```
 
 ## Project Structure <a name="project-structure"></a>
