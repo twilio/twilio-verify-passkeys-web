@@ -40,6 +40,13 @@ npm install @twilio/twilio-verify-passkeys-web
 npm install https://github.com/twilio/twilio-verify-passkeys-web.git
 ```
 
+### Using it from CDN
+
+```
+<script src="https://unpkg.com/@twilio/twilio-verify-passkeys-web@0.0.1/dist/twilio-verify-passkeys.iife.js"></script>
+```
+
+
 ## Quickstart <a name="quickstart"></a>
 
 ### Create registration
