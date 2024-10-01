@@ -1,15 +1,16 @@
 {
   "name": "@twilio/twilio-verify-passkeys-web",
-  "version": "0.0.1",
+  "version": "0.0.0",
   "description": "Twilio Passkeys Web SDK enables developers to easily add Passkeys into their existing authentication flows within their own web applications. The Verify Passkeys SDK supports passkeys creation and authentication using the FIDO/WebAuthn industry standard.",
-  "main": "dist/@twilio/twilio-verify-passkeys-web.cjs.js",
-  "module": "dist/@twilio/twilio-verify-passkeys-web.es.js",
+  "main": "dist/twilio-verify-passkeys.cjs.js",
+  "module": "dist/twilio-verify-passkeys.es.js",
   "type": "module",
+  "types": "dist/index.d.ts",
   "scripts": {
-    "build": "rollup --config",
+    "build": "rollup --config && npx -p typescript tsc dist/twilio-verify-passkeys.es.js --declaration --allowJs --emitDeclarationOnly --outFile dist/index.d.ts",
     "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js ./src",
     "coverage": "node --experimental-vm-modules node_modules/jest/bin/jest.js --coverage ./src",
-    "release": "release-it",
+    "release": "release-it --ci",
     "demo": "rollup --config && http-server -o ./sample-app/index.html -p 8080"
   },
   "keywords": [
@@ -20,7 +21,10 @@
     "fido",
     "web"
   ],
-  "repository": "https://github.com/twilio/twilio-verify-passkeys-web",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/twilio/twilio-verify-passkeys-web"
+  },
   "homepage": "https://github.com/twilio/twilio-verify-passkeys-web#readme",
   "author": "Twilio Inc.",
   "license": "Apache-2.0",
@@ -41,21 +45,20 @@
   "release-it": {
     "$schema": "https://unpkg.com/release-it/schema/release-it.json",
     "github": {
-      "release": true
+      "release": true,
+      "assets": [
+        "dist/*.js"
+      ]
     },
     "npm": {
       "publish": true
     },
     "git": {
       "requireBranch": "main",
-      "commitMessage": "chore(release): ${version}"
+      "commitMessage": "chore(release): ${version} [skip ci]"
     },
     "hooks": {
-      "before:init": [
-        "git pull",
-        "npm run test"
-      ],
-      "after:bump": [
+      "before:git:bump": [
         "npx auto-changelog -p"
       ]
     }

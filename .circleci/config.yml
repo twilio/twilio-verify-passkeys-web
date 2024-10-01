@@ -24,6 +24,33 @@ jobs:
       - run:
           name: Build
           command: npm run build
+
+  release:
+    executor: node/default
+    steps:
+      - checkout
+      - run:
+          name: Initialize git user
+          command: |
+            git config --global user.email "svc.authid-sdk-ci@twilio.com"
+            git config --global user.name "authid-sdk-ci"
+      - run:
+          name: Setup git
+          command: git branch --set-upstream-to=origin/main main
+      - run:
+          name: Authenticate with registry
+          command: npm config set //registry.npmjs.org/:_authToken $NPM_TOKEN
+      - run:
+          name: Install dependencies
+          command: npm install
+      - run:
+          name: Build Library
+          command: npm run build
+      - run:
+          name: Release
+          command: npm run release
+
+
 workflows:
   test_sdk:
     jobs:
@@ -34,3 +61,12 @@ workflows:
       - build:
           requires:
             - test
+  release_sdk:
+    jobs:
+      - test
+      - release:
+          requires:
+            - test
+          filters:
+            branches:
+              only: main

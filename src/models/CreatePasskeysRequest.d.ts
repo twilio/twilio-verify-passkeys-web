@@ -32,7 +32,7 @@ type AuthenticatorSelection = {
     userVerification: UserVerificationRequirement;
 }
 
-type CreatePasskeysRequest = {
+export type CreatePasskeysRequest = {
     challenge: ArrayBuffer;
     rp: Rp;
     user: User;

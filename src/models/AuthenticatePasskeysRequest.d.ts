@@ -22,6 +22,6 @@ type AuthenticatePasskeyRequestPublicKey = {
     userVerification: UserVerificationRequirement;
 }
 
-type AuthenticatePasskeysRequest = {
+export type AuthenticatePasskeysRequest = {
     publicKey: AuthenticatePasskeyRequestPublicKey;
 }

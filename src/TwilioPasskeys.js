@@ -36,6 +36,10 @@ class TwilioPasskeys {
     }
 
     /**
+     * @typedef {import("./models/CreatePasskeysRequest").CreatePasskeysRequest} CreatePasskeysRequest
+     */
+
+    /**
      * @param {string | CreatePasskeysRequest} challengePayload
      * @returns {Promise<CreatePasskeysResult>}
      */
@@ -54,6 +58,10 @@ class TwilioPasskeys {
         }
         return result;
     }
+
+    /**
+     * @typedef {import("./models/AuthenticatePasskeysRequest").AuthenticatePasskeysRequest} AuthenticatePasskeysRequest
+     */
 
     /**
      * @param {string | AuthenticatePasskeysRequest} authenticationRequest

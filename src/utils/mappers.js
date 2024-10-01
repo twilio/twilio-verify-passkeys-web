@@ -19,6 +19,10 @@ import CreatePasskeysResponse from '../models/CreatePasskeysResponse.js';
 import AuthenticatePasskeysResponse from '../models/AuthenticatePasskeysResponse.js';
 
 /**
+ * @typedef {import("../models/CreatePasskeysRequest").CreatePasskeysRequest} CreatePasskeysRequest
+ */
+
+/**
  * @param {string} challengePayload
  * @returns {CreatePasskeysRequest}
  */
@@ -68,6 +72,10 @@ const mapToPasskeysCreationResponse = (credential) => {
         transports
     );
 }
+
+/**
+ * @typedef {import("../models/AuthenticatePasskeysRequest").AuthenticatePasskeysRequest} AuthenticatePasskeysRequest
+ */
 
 /**
  * 

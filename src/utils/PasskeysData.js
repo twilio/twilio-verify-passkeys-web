@@ -107,6 +107,10 @@ export const createPasskeyResponse = new CreatePasskeysResponse(
 );
 
 /**
+ * @typedef {import("../models/CreatePasskeysRequest").CreatePasskeysRequest} CreatePasskeysRequest
+ */
+
+/**
  * @type {CreatePasskeysRequest}
  */
 export const createPasskeyRequest = {
@@ -186,6 +190,10 @@ export const authenticatePasskeyResponse = new AuthenticatePasskeysResponse(
     SIGNATURE,
     USER_HANDLE
 )
+
+/**
+ * @typedef {import("../models/AuthenticatePasskeysRequest").AuthenticatePasskeysRequest} AuthenticatePasskeysRequest
+ */
 
 /**
  * @type {AuthenticatePasskeysRequest}
