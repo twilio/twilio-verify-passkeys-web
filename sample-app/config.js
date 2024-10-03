@@ -14,4 +14,4 @@
  * limitations under the License.
  */
 
-const API_URL = "https://passkey-sample.ngrok.app"
+const API_URL = "https://backend-url.com"

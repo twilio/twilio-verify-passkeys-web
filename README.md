@@ -42,7 +42,7 @@ npm install https://github.com/twilio/twilio-verify-passkeys-web.git
 
 ### Using it from CDN
 
-```
+```html
 <script src="https://unpkg.com/@twilio/twilio-verify-passkeys-web@0.0.1/dist/twilio-verify-passkeys.iife.js"></script>
 ```
 
