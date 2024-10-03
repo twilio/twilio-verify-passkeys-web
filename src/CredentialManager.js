@@ -21,6 +21,10 @@ class CredentialManager {
     constructor() {}
 
     /**
+     * @typedef {import("./models/CreatePasskeysRequest").CreatePasskeysRequest} CreatePasskeysRequest
+     */
+
+    /**
      * Create a new credential with the web authn API
      * requestResponse: the response from the server
      * @param {CreatePasskeysRequest} createRequest 
@@ -34,6 +38,11 @@ class CredentialManager {
         let credential = await navigator.credentials.create(createCredentialDefaultArgs);
         return credential;
     }
+
+    /**
+     * @typedef {import("./models/AuthenticatePasskeysRequest").AuthenticatePasskeysRequest} AuthenticatePasskeysRequest
+     */
+
     /** 
      * Get the credential with the web authn API
      * requestResponse: the response from the server
