@@ -1,6 +1,6 @@
 {
   "name": "@twilio/twilio-verify-passkeys-web",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "Twilio Passkeys Web SDK enables developers to easily add Passkeys into their existing authentication flows within their own web applications. The Verify Passkeys SDK supports passkeys creation and authentication using the FIDO/WebAuthn industry standard.",
   "main": "dist/twilio-verify-passkeys.cjs.js",
   "module": "dist/twilio-verify-passkeys.es.js",
@@ -23,7 +23,7 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/twilio/twilio-verify-passkeys-web"
+    "url": "git+https://github.com/twilio/twilio-verify-passkeys-web.git"
   },
   "homepage": "https://github.com/twilio/twilio-verify-passkeys-web#readme",
   "author": "Twilio Inc.",
