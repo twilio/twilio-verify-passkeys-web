@@ -24,6 +24,9 @@ jobs:
       - run:
           name: Build
           command: npm run build
+      - store_artifacts:
+          path: sample-app/
+          destination: sample-app
 
   release:
     executor: node/default

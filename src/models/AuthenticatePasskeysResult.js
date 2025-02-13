@@ -19,8 +19,10 @@
  */
 class AuthenticatePasskeysResult {
     constructor() {
-        /**
-         * @type {?import("./AuthenticatePasskeysResponse").default}
+        /** @typedef {import("./AuthenticatePasskeysResponse").default} AuthenticatePasskeysResponse */
+
+        /** 
+         * @type {?AuthenticatePasskeysResponse} 
          */
         this.Success = null;
         /**

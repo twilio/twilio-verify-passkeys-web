@@ -35,9 +35,7 @@ class TwilioPasskeys {
         this.credentialManager = new CredentialManager();
     }
 
-    /**
-     * @typedef {import("./models/CreatePasskeysRequest").CreatePasskeysRequest} CreatePasskeysRequest
-     */
+    /** @typedef {import("./models/CreatePasskeysRequest").CreatePasskeysRequest} CreatePasskeysRequest */
 
     /**
      * @param {string | CreatePasskeysRequest} challengePayload
@@ -59,9 +57,7 @@ class TwilioPasskeys {
         return result;
     }
 
-    /**
-     * @typedef {import("./models/AuthenticatePasskeysRequest").AuthenticatePasskeysRequest} AuthenticatePasskeysRequest
-     */
+    /** @typedef {import("./models/AuthenticatePasskeysRequest").AuthenticatePasskeysRequest} AuthenticatePasskeysRequest */
 
     /**
      * @param {string | AuthenticatePasskeysRequest} authenticationRequest
