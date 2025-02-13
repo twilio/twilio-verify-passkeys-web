@@ -11,7 +11,9 @@
     "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js ./src",
     "coverage": "node --experimental-vm-modules node_modules/jest/bin/jest.js --coverage ./src",
     "release": "release-it --ci",
-    "demo": "rollup --config && http-server -o ./sample-app/index.html -p 8080"
+    "demo": "rollup --config && http-server -o ./sample-app/index.html -p 8080",
+    "lint": "eslint src/",
+    "prepare": "husky"
   },
   "keywords": [
     "twilio",
@@ -29,10 +31,14 @@
   "author": "Twilio Inc.",
   "license": "Apache-2.0",
   "devDependencies": {
+    "@eslint/js": "^9.20.0",
     "@jest/globals": "^29.7.0",
     "@types/jest": "^29.5.12",
     "@types/node": "^20.14.9",
+    "eslint": "^9.20.1",
+    "globals": "^15.15.0",
     "http-server": "^14.1.1",
+    "husky": "^9.1.7",
     "jest": "^29.7.0",
     "jest-environment-jsdom": "^29.7.0",
     "release-it": "^17.6.0",

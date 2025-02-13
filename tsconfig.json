@@ -6,5 +6,5 @@
         "lib": ["ES5", "ES6", "dom"],
         "outDir": "./dist",
     },
-    "exclude": ["node_modules", "dist"]
+    "exclude": ["node_modules", "dist", "eslint.config.js"]
 }
