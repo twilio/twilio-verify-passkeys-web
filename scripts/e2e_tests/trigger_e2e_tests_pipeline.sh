@@ -1,6 +1,6 @@
 #!/bin/bash
 
-if [ $# -ne 5 ]; then
+if [ $# -ne 3 ]; then
     echo "Usage: $0 <WEB_URL> <TRIGGERING_WORKFLOW_ID> <TRIGGERING_WORKFLOW_WAITING_JOB_NAME>"
     exit 1
 fi
