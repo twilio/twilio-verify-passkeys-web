@@ -45,6 +45,11 @@ jobs:
       - run:
           name: Build
           command: npm run build
+      - run:
+          name: Set sample backend URL
+          command: |
+            cd sample-app
+            sed -i '' "s|const API_URL = \".*\"|const API_URL = \"${SAMPLE_BACKEND_URL}\"|" config.js
       - store_artifacts:
           path: sample-app/
           destination: sample-app
@@ -148,13 +153,6 @@ jobs:
 
 
 workflows:
-  test_sdk:
-    when:
-      and:
-        - equal: [ false, << pipeline.parameters.generate-app >> ]
-        - equal: [ false, << pipeline.parameters.e2e-tests >> ]
-    jobs:
-      - test
   build_sdk:
     when:
       and:
