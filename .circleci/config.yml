@@ -4,8 +4,6 @@ orbs:
   node: circleci/node@5.2.0
 
 aliases:
-  - &workspace
-      ~/passkeys-sdk
   - &tmp-workspace
       tmp/workspace
   - &env-vars-file
@@ -17,7 +15,6 @@ executors:
     docker:
       - image: cimg/base:2025.02
     resource_class: small
-    working_directory: *workspace
 
 parameters:
   generate-app:
@@ -42,8 +39,6 @@ jobs:
     executor: node/default
     steps:
       - checkout
-      - attach_workspace:
-          at: *workspace
       - run:
           name: Install dependencies
           command: npm install
@@ -66,9 +61,9 @@ jobs:
             TMP_WORKSPACE: *tmp-workspace
             ENV_VARS_FILE: *env-vars-file
       - persist_to_workspace:
-          root: *workspace
+          root: *tmp-workspace
           paths:
-            - *tmp-workspace
+            - *env-vars-file
 
   run-web-local-sdk-e2e-tests:
     executor: ubuntu-small-executor
@@ -81,7 +76,7 @@ jobs:
     steps:
       - checkout
       - attach_workspace:
-          at: *workspace
+          at: *tmp-workspace
       - run:
           name: Start automation pipeline to run E2E tests
           command: |
@@ -95,9 +90,9 @@ jobs:
             TMP_WORKSPACE: *tmp-workspace
             ENV_VARS_FILE: *env-vars-file
       - persist_to_workspace:
-          root: *workspace
+          root: *tmp-workspace
           paths:
-            - *tmp-workspace
+            - *env-vars-file
   check-web-local-sdk-e2e-tests-result:
     executor: ubuntu-small-executor
 
@@ -108,7 +103,7 @@ jobs:
     steps:
       - checkout
       - attach_workspace:
-          at: *workspace
+          at: *tmp-workspace
       - run:
           name: Check triggered workflow status
           command: |
