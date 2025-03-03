@@ -49,7 +49,7 @@ jobs:
           name: Set sample backend URL
           command: |
             cd sample-app
-            sed "s|const API_URL = \".*\"|const API_URL = \"${SAMPLE_BACKEND_URL}\"|" config.js
+            sed -i -e "s|const API_URL = \".*\"|const API_URL = \"${SAMPLE_BACKEND_URL}\"|" config.js
       - store_artifacts:
           path: sample-app/
           destination: sample-app
