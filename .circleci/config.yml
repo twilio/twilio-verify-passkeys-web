@@ -59,7 +59,7 @@ jobs:
           command: |
             export WEB_URL="https://output.circle-artifacts.com/output/job/${CIRCLE_WORKFLOW_JOB_ID}/artifacts/${CIRCLE_NODE_INDEX}/sample-app/index.html"
             echo $WEB_URL
-            ./Authy/scripts/add_env_variable_to_file.sh WEB_URL $WEB_URL $TMP_WORKSPACE $ENV_VARS_FILE
+            ./scripts/add_env_variable_to_file.sh WEB_URL $WEB_URL $TMP_WORKSPACE $ENV_VARS_FILE
           environment:
             TMP_WORKSPACE: *tmp-workspace
             ENV_VARS_FILE: *env-vars-file
