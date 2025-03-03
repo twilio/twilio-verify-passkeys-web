@@ -27,6 +27,9 @@ jobs:
       - store_artifacts:
           path: sample-app/
           destination: sample-app
+      - store_artifacts:
+          path: dist/
+          destination: dist
 
   release:
     executor: node/default
