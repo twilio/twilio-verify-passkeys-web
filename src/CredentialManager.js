@@ -20,9 +20,7 @@
 class CredentialManager {
     constructor() {}
 
-    /**
-     * @typedef {import("./models/CreatePasskeysRequest").CreatePasskeysRequest} CreatePasskeysRequest
-     */
+    /** @typedef {import("./models/CreatePasskeysRequest").CreatePasskeysRequest} CreatePasskeysRequest */
 
     /**
      * Create a new credential with the web authn API
@@ -39,9 +37,7 @@ class CredentialManager {
         return credential;
     }
 
-    /**
-     * @typedef {import("./models/AuthenticatePasskeysRequest").AuthenticatePasskeysRequest} AuthenticatePasskeysRequest
-     */
+    /** @typedef {import("./models/AuthenticatePasskeysRequest").AuthenticatePasskeysRequest} AuthenticatePasskeysRequest */
 
     /** 
      * Get the credential with the web authn API

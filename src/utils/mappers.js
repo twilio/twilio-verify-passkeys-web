@@ -18,9 +18,7 @@ import { ArrayBufferToBase64, StringToArrayBuffer } from './converters.js';
 import CreatePasskeysResponse from '../models/CreatePasskeysResponse.js';
 import AuthenticatePasskeysResponse from '../models/AuthenticatePasskeysResponse.js';
 
-/**
- * @typedef {import("../models/CreatePasskeysRequest").CreatePasskeysRequest} CreatePasskeysRequest
- */
+/** @typedef {import("../models/CreatePasskeysRequest").CreatePasskeysRequest} CreatePasskeysRequest */
 
 /**
  * @param {string} challengePayload
@@ -73,9 +71,7 @@ const mapToPasskeysCreationResponse = (credential) => {
     );
 }
 
-/**
- * @typedef {import("../models/AuthenticatePasskeysRequest").AuthenticatePasskeysRequest} AuthenticatePasskeysRequest
- */
+/** @typedef {import("../models/AuthenticatePasskeysRequest").AuthenticatePasskeysRequest} AuthenticatePasskeysRequest */
 
 /**
  * 

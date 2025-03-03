@@ -43,7 +43,7 @@ npm install https://github.com/twilio/twilio-verify-passkeys-web.git
 ### Using it from CDN
 
 ```html
-<script src="https://unpkg.com/@twilio/twilio-verify-passkeys-web@0.0.1/dist/twilio-verify-passkeys.iife.js"></script>
+<script src="https://unpkg.com/@twilio/twilio-verify-passkeys-web@0.0.2/dist/twilio-verify-passkeys.iife.js"></script>
 ```
 
 
@@ -60,7 +60,7 @@ You can also call `create(CreatePasskeysRequest)`, where the `CreatePasskeysRequ
 ```js
 const createPasskeysResult = twilioPasskeys.create(challengePayload)
 
-if(createPasskeysResult.Error !== null) {
+if(createPasskeysResult.Error === null) {
     // verify the createPasskeyResult.createPasskeyResponse against your backend and finish sign up
 } else {
     // handle error
@@ -78,7 +78,7 @@ You can also call `authenticate(AuthenticatePasskeysRequest)`, where the `Authen
 ```js
 const authenticatePasskeyResult = twilioPasskeys.authenticate(authenticationRequest)
 
-if(authenticatePasskeyResult.Error !== null) {
+if(authenticatePasskeyResult.Error === null) {
     // verify the authenticatePasskeyResult.authenticatePasskeyResponse against your backend
 } else {
     // handle error

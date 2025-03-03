@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-import CreatePasskeysResponse from "./CreatePasskeysResponse";
-
 /**
  * Class to handle the result of creating passkeys
  */
 class CreatePasskeysResult {
     constructor() {
-        /**
+        /** @typedef {import("./CreatePasskeysResponse").default} CreatePasskeysResponse */
+
+        /** 
          * @type {?CreatePasskeysResponse}
          */
         this.Success = null;
