@@ -159,12 +159,13 @@
     </head>
     <body>
         <div id="container">
-            <h1 class="title">Welcome!</h1>
+            <h1 class="title">Welcome to OwlBank</h1>
+            <h2 class="title">What's your phone number?</h2>
             <div class="input_container">
                 <div class="input_component">
                     <input type="tel" name="username_input" id="usr_input" oninput="checkAvalibility()">
                 </div>
-                <button type="button" class="btn continue_btn" id="continue" onclick="login()" disabled>Continue</button>
+                <button type="button" class="btn continue_btn" id="continue" onclick="login()" disabled>Get Started</button>
                 <span class="separator">&#8213; or &#8213;</span>
                 <button type="button" class="btn passkey_btn" onclick="signIn()">Sign in with passkey</button>
             </div>
@@ -174,14 +175,14 @@
             <p>Harness your device capabilities for a fast<br> passkey login with maximun security.</p>
             <a>Learn more &rarr;</a>
             <div class="input_container modal_input">
-                <button class="btn continue_btn enable" onclick="signUp()">Continue</button>
+                <button class="btn continue_btn enable" onclick="signUp()" id="signInButton">Continue</button>
                 <a class="skip_btn">Skip</a>
             </div>
         </div>
         <div id="app" class="invisible">
             <h1 class="title" id="welcome"></h1>
             <div class="input_container">
-                <button class="btn continue_btn enable" onclick="logOut()" id="finalButton">Continue to Sign In</button>
+                <button class="btn continue_btn enable" onclick="logOut()" id="signOutButton">Sign out</button>
             </div>
         </div>
     </body>
@@ -191,7 +192,7 @@
         let sessionUsername = sessionStorage.getItem("session");
 
         const loadApp = (username) => {
-            document.getElementById("welcome").innerHTML = `Welcome ${username}`
+            document.getElementById("welcome").innerHTML = `Welcome back ${username}`
             document.getElementById("modal").classList.add("invisible");
             document.getElementById("container").classList.add("invisible");
             document.getElementById("app").classList.remove("invisible");
