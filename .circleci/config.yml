@@ -3,6 +3,27 @@ version: 2.1
 orbs:
   node: circleci/node@5.2.0
 
+aliases:
+  - &tmp-workspace
+      tmp/workspace
+  - &env-vars-file
+      env_vars
+
+executors:
+  ubuntu-small-executor:
+    # https://circleci.com/developer/images/image/cimg/base
+    docker:
+      - image: cimg/base:2025.02
+    resource_class: small
+
+parameters:
+  generate-app:
+    type: boolean
+    default: false
+  e2e-tests:
+    type: boolean
+    default: false
+
 jobs:
   test:
     executor: node/default
@@ -24,12 +45,86 @@ jobs:
       - run:
           name: Build
           command: npm run build
+      - run:
+          name: Set sample backend URL
+          command: |
+            cd sample-app
+            sed -i -e "s|const API_URL = \".*\"|const API_URL = \"${SAMPLE_BACKEND_URL}\"|" config.js
       - store_artifacts:
           path: sample-app/
           destination: sample-app
       - store_artifacts:
           path: dist/
           destination: dist
+      - run:
+          name: Save web url
+          command: |
+            export WEB_URL="https://output.circle-artifacts.com/output/job/${CIRCLE_WORKFLOW_JOB_ID}/artifacts/${CIRCLE_NODE_INDEX}/sample-app/index.html"
+            echo $WEB_URL
+            ./scripts/add_env_variable_to_file.sh WEB_URL $WEB_URL $TMP_WORKSPACE $ENV_VARS_FILE
+          environment:
+            TMP_WORKSPACE: *tmp-workspace
+            ENV_VARS_FILE: *env-vars-file
+      - persist_to_workspace:
+          root: *tmp-workspace
+          paths:
+            - *env-vars-file
+
+  run-web-local-sdk-e2e-tests:
+    executor: ubuntu-small-executor
+
+    parameters:
+      waiting_job_name:
+        default: ""
+        type: string
+
+    steps:
+      - checkout
+      - attach_workspace:
+          at: *tmp-workspace
+      - run:
+          name: Start automation pipeline to run E2E tests
+          command: |
+            source "$TMP_WORKSPACE/$ENV_VARS_FILE"
+            echo $WEB_URL
+            
+            TRIGGERED_PIPELINE=$(./scripts/e2e_tests/trigger_e2e_tests_pipeline.sh $WEB_URL $CIRCLE_WORKFLOW_ID << parameters.waiting_job_name >>)
+            echo "Triggered pipeline: $TRIGGERED_PIPELINE"
+            ./scripts/add_env_variable_to_file.sh WEB_LOCAL_E2E_TESTS_TRIGGERED_PIPELINE $TRIGGERED_PIPELINE $TMP_WORKSPACE $ENV_VARS_FILE
+          environment:
+            TMP_WORKSPACE: *tmp-workspace
+            ENV_VARS_FILE: *env-vars-file
+      - persist_to_workspace:
+          root: *tmp-workspace
+          paths:
+            - *env-vars-file
+  check-web-local-sdk-e2e-tests-result:
+    executor: ubuntu-small-executor
+
+    parameters:
+      workflow_name_to_check:
+        default: ""
+        type: string
+    steps:
+      - checkout
+      - attach_workspace:
+          at: *tmp-workspace
+      - run:
+          name: Check triggered workflow status
+          command: |
+            source "$TMP_WORKSPACE/$ENV_VARS_FILE"
+            echo $WEB_LOCAL_E2E_TESTS_TRIGGERED_PIPELINE
+            
+            TRIGGERED_E2E_TESTS_PIPELINE_STATUS=$(./scripts/e2e_tests/check_triggered_e2e_tests_pipeline_status.sh $WEB_LOCAL_E2E_TESTS_TRIGGERED_PIPELINE << parameters.workflow_name_to_check >>)
+            echo "Triggered pipeline status: $TRIGGERED_E2E_TESTS_PIPELINE_STATUS"
+            
+            if [[ "$TRIGGERED_E2E_TESTS_PIPELINE_STATUS" != "success"* ]]; then
+              echo "Workflow not successful - ${TRIGGERED_E2E_TESTS_PIPELINE_STATUS}"
+              (exit -1) 
+            fi
+          environment:
+            TMP_WORKSPACE: *tmp-workspace
+            ENV_VARS_FILE: *env-vars-file
 
   release:
     executor: node/default
@@ -58,21 +153,62 @@ jobs:
 
 
 workflows:
-  test_sdk:
-    jobs:
-      - test
-  build_sdk:
+  build_and_test:
+    when:
+      and:
+        - equal: [ false, << pipeline.parameters.generate-app >> ]
+        - equal: [ false, << pipeline.parameters.e2e-tests >> ]
     jobs:
       - test
       - build:
           requires:
             - test
+      - run-web-local-sdk-e2e-tests:
+          waiting_job_name: wait-for-web-local-sdk-e2e-tests
+          requires:
+            - build
+      - wait-for-web-local-sdk-e2e-tests:
+          type: approval
+          requires:
+            - run-web-local-sdk-e2e-tests
+      - check-web-local-sdk-e2e-tests-result:
+          workflow_name_to_check: "web-tests"
+          requires:
+            - wait-for-web-local-sdk-e2e-tests
   release_sdk:
+    when:
+      and:
+        - equal: [ false, << pipeline.parameters.generate-app >> ]
+        - equal: [ false, << pipeline.parameters.e2e-tests >> ]
+        - matches:
+            pattern: "^main$"
+            value: << pipeline.git.branch >>
     jobs:
       - test
       - release:
           requires:
             - test
-          filters:
-            branches:
-              only: main
+  generate_app:
+    when:
+      and:
+        - equal: [ true, << pipeline.parameters.generate-app >> ]
+    jobs:
+      - build
+  execute_e2e_tests:
+      when:
+        and:
+        - equal: [ true, << pipeline.parameters.e2e-tests >> ]
+      jobs:
+        - build
+        - run-web-local-sdk-e2e-tests:
+            waiting_job_name: wait-for-web-local-sdk-e2e-tests
+            requires:
+              - build
+        - wait-for-web-local-sdk-e2e-tests:
+            type: approval
+            requires:
+              - run-web-local-sdk-e2e-tests
+        - check-web-local-sdk-e2e-tests-result:
+            workflow_name_to_check: "web-tests"
+            requires:
+              - wait-for-web-local-sdk-e2e-tests
