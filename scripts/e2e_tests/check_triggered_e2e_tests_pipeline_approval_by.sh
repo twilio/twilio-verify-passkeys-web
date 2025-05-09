@@ -9,7 +9,7 @@ TRIGGERED_WORKFLOW=$1
 JOB_NAME_TO_CHECK=$2
 
 # Fetch the job status for the triggered workflow
-TRIGGERED_JOB_APPROVAL=$(curl --request GET \
+TRIGGERED_JOB_APPROVAL_BY=$(curl --request GET \
   --url "https://circleci.com/api/v2/workflow/${TRIGGERED_WORKFLOW}/job" \
   --header "Circle-Token: $CIRCLE_TOKEN" \
   --header "Content-Type: application/json" | \
@@ -21,4 +21,10 @@ if [ -z "$TRIGGERED_JOB_APPROVAL" ]; then
     exit 1
 fi
 
-echo "$TRIGGERED_JOB_APPROVAL"
+WHO_APPROVED=$(curl --request GET \
+  --url "https://circleci.com/api/v2/user/${TRIGGERED_JOB_APPROVAL_BY}" \
+  --header "Circle-Token: $CIRCLE_TOKEN" \
+  --header "Content-Type: application/json" | \
+  jq -r .name)
+
+echo "$WHO_APPROVED"
