@@ -161,9 +161,13 @@ workflows:
     jobs:
       - test
       - build:
+          context:
+            - verify-passkeys
           requires:
             - test
       - run-web-local-sdk-e2e-tests:
+          context:
+            - verify-passkeys
           waiting_job_name: wait-for-web-local-sdk-e2e-tests
           requires:
             - build
@@ -172,6 +176,8 @@ workflows:
           requires:
             - run-web-local-sdk-e2e-tests
       - check-web-local-sdk-e2e-tests-result:
+          context:
+            - verify-passkeys
           workflow_name_to_check: "web-tests"
           requires:
             - wait-for-web-local-sdk-e2e-tests
@@ -186,6 +192,9 @@ workflows:
     jobs:
       - test
       - release:
+          context:
+            - verify-passkeys
+            - verify-passkeys-web
           requires:
             - test
   generate_app:
@@ -199,8 +208,12 @@ workflows:
         and:
         - equal: [ true, << pipeline.parameters.e2e-tests >> ]
       jobs:
-        - build
+        - build:
+            context:
+              - verify-passkeys
         - run-web-local-sdk-e2e-tests:
+            context:
+              - verify-passkeys
             waiting_job_name: wait-for-web-local-sdk-e2e-tests
             requires:
               - build
@@ -209,6 +222,8 @@ workflows:
             requires:
               - run-web-local-sdk-e2e-tests
         - check-web-local-sdk-e2e-tests-result:
+            context:
+              - verify-passkeys
             workflow_name_to_check: "web-tests"
             requires:
               - wait-for-web-local-sdk-e2e-tests
