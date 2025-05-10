@@ -16,8 +16,8 @@ TRIGGERED_JOB_APPROVAL_BY=$(curl --request GET \
   jq -r --arg JOB_NAME "$JOB_NAME_TO_CHECK" \
   '.items[] | select(.type == "approval") | select(.name == $JOB_NAME) | .approved_by')
 
-if [ -z "$TRIGGERED_JOB_APPROVAL" ]; then
-    echo "Error: Workflow '$JOB_NAME_TO_CHECK' not found in pipeline '$TRIGGERED_WORKFLOW'."
+if [ -z "$TRIGGERED_JOB_APPROVAL_BY" ]; then
+    echo "Error: Workflow '$JOB_NAME_TO_CHECK' not found in workflow '$TRIGGERED_WORKFLOW'."
     exit 1
 fi
 
