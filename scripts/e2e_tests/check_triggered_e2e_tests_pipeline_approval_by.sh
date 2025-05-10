@@ -25,6 +25,6 @@ WHO_APPROVED=$(curl --request GET \
   --url "https://circleci.com/api/v2/user/${TRIGGERED_JOB_APPROVAL_BY}" \
   --header "Circle-Token: $CIRCLE_TOKEN" \
   --header "Content-Type: application/json" | \
-  jq -r .name)
+  jq -r .login)
 
 echo "$WHO_APPROVED"
