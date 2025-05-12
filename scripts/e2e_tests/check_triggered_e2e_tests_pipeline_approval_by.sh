@@ -28,4 +28,9 @@ WHO_APPROVED=$(curl --request GET \
   --header "Content-Type: application/json" | \
   jq -r .login)
 
-echo $WHO_APPROVED
+if [[ "$WHO_APPROVED" != "$GITHUB_USER_NAME" ]]; then
+    echo "Workflow not successful - approved by ${WHO_APPROVED}"
+    exit 1
+fi
+
+echo "APPROVED"
