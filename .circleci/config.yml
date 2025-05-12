@@ -117,7 +117,7 @@ jobs:
             echo "Triggered pipeline approval by: $TRIGGERED_E2E_TESTS_PIPELINE_APPROVAL_BY"
             
             if [[ "$TRIGGERED_E2E_TESTS_PIPELINE_APPROVAL_BY" != "$GITHUB_USER_NAME" ]]; then
-              echo "Workflow not successful - ${TRIGGERED_E2E_TESTS_PIPELINE_APPROVAL_BY}"
+              echo "Workflow not successful - approved by ${TRIGGERED_E2E_TESTS_PIPELINE_APPROVAL_BY}"
               (exit -1) 
             fi
           environment:
@@ -169,6 +169,10 @@ workflows:
           waiting_job_name: wait-for-web-local-sdk-e2e-tests
           requires:
             - build
+          filters:
+            branches:
+              only:
+                - ^dev$
       - wait-for-web-local-sdk-e2e-tests:
           type: approval
           requires:
