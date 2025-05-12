@@ -172,7 +172,7 @@ workflows:
           filters:
             branches:
               only:
-                - ymoreno/e2e-tests
+                - develop
       - wait-for-web-local-sdk-e2e-tests:
           type: approval
           requires:
