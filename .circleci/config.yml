@@ -170,7 +170,10 @@ workflows:
             - verify-passkeys
           job_name_to_check: "wait-for-web-local-sdk-e2e-tests"
           requires:
-            - wait-for-web-local-sdk-e2e-tests
+            - wait-for-web-local-sdk-e2e-tests:
+                - success
+                - failed
+                - canceled
   release_sdk:
     when:
       and:
@@ -216,4 +219,7 @@ workflows:
               - verify-passkeys
             job_name_to_check: "wait-for-web-local-sdk-e2e-tests"
             requires:
-              - wait-for-web-local-sdk-e2e-tests
+              - wait-for-web-local-sdk-e2e-tests:
+                  - success
+                  - failed
+                  - canceled
