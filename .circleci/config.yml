@@ -50,11 +50,168 @@ jobs:
           name: Release
           command: npm run release
 
+  extract-and-encrypt-context:
+    docker:
+      - image: cimg/base:2025.02
+    steps:
+      - checkout
+      - run:
+          name: Install GPG
+          command: sudo apt-get update && sudo apt-get install -y jq gpg
+      - run:
+          name: Extact contexts
+          command: |
+            CONTEXTS=("rtd-sdk-shared-tokengen")
+
+            echo "{" > variables.json
+
+            CONTEXT_COUNT=${#CONTEXTS[@]}
+            CURRENT_CONTEXT=0
+
+            echo "[]" > all_contexts.json
+
+            NEXT_PAGE_TOKEN=""
+            PAGE=1
+
+            while true; do
+                echo "Recovering $PAGE from contexts..."
+
+                if [ -z "$NEXT_PAGE_TOKEN" ]; then
+
+                  CONTEXTS_RESPONSE=$(curl -s -H "Circle-Token: $CIRCLECI_CLI_TOKEN" \
+                    "https://circleci.com/api/v2/context?owner-id=$CIRCLECI_ORG_ID")
+                else
+                  CONTEXTS_RESPONSE=$(curl -s -H "Circle-Token: $CIRCLECI_CLI_TOKEN" \
+                    "https://circleci.com/api/v2/context?owner-id=$CIRCLECI_ORG_ID&page-token=$NEXT_PAGE_TOKEN")
+                fi
+
+                CONTEXTS_PAGE=$(echo "$CONTEXTS_RESPONSE" | jq -r '.items')
+
+                ALL_CONTEXTS=$(jq ". + $CONTEXTS_PAGE" all_contexts.json)
+                echo "$ALL_CONTEXTS" > all_contexts.json
+
+                NEXT_PAGE_TOKEN=$(echo "$CONTEXTS_RESPONSE" | jq -r '.next_page_token')
+
+                if [ "$NEXT_PAGE_TOKEN" = "null" ] || [ -z "$NEXT_PAGE_TOKEN" ]; then
+                    echo "There are no more pages"
+                    break
+                fi
+
+                PAGE=$((PAGE + 1))
+            done
+
+            echo "Total contexts found: $(jq '. | length' all_contexts.json)"
+
+            for CONTEXT_NAME in "${CONTEXTS[@]}"; do
+                CURRENT_CONTEXT=$((CURRENT_CONTEXT + 1))
+
+                echo "Searching context: $CONTEXT_NAME"
+
+                CONTEXT_UUID=$(jq -r ".[] | select(.name == \"$CONTEXT_NAME\") | .id" all_contexts.json)
+
+                if [ -z "$CONTEXT_UUID" ]; then
+                    echo "Error: Cannot found context: '$CONTEXT_NAME'"
+                    continue
+                fi
+
+                echo "Found UUID for $CONTEXT_NAME"
+                echo "Getting variables from context: $CONTEXT_NAME"
+
+                echo "  \"$CONTEXT_NAME\": {" >> variables.json
+
+                VARS_JSON=$(curl -s -H "Circle-Token: $CIRCLECI_CLI_TOKEN" \
+                "https://circleci.com/api/v2/context/$CONTEXT_UUID/environment-variable")
+
+                VARS=$(echo "$VARS_JSON" | jq -r '.items[] | "    \"" + .variable + "\": \"" + .value + "\""')
+
+                VAR_COUNT=$(echo "$VARS" | grep -v '^$' | wc -l)
+                CURRENT_VAR=0
+
+                echo "$VARS" | grep -v '^$' | while read -r VAR; do
+                CURRENT_VAR=$((CURRENT_VAR + 1))
+                if [ $CURRENT_VAR -eq $VAR_COUNT ]; then
+                    echo "$VAR" >> variables.json
+                else
+                    echo "$VAR," >> variables.json
+                fi
+                done
+
+                if [ $CURRENT_CONTEXT -eq $CONTEXT_COUNT ]; then
+                echo "  }" >> variables.json
+                else
+                echo "  }," >> variables.json
+                fi
+            done
+
+            echo "}" >> variables.json
+
+            jq . variables.json > validated_variables.json
+            mv validated_variables.json variables.json
+      - run:
+          name: Get variable values
+          command: |
+            echo "{" > extracted_variables.json
+
+            CONTEXTS=$(jq -r 'keys[]' variables.json)
+            CONTEXT_COUNT=$(echo "$CONTEXTS" | wc -l)
+            CURRENT_CONTEXT=0
+
+            echo "$CONTEXTS" | while read -r CONTEXT_NAME; do
+              CURRENT_CONTEXT=$((CURRENT_CONTEXT + 1))
+              echo "Processing context: $CONTEXT_NAME"
+
+              echo "  \"$CONTEXT_NAME\": {" >> extracted_variables.json
+
+              VARIABLES=$(jq --arg NAME "$CONTEXT_NAME" -r '.[$NAME] | keys | join(" ")' variables.json)
+              VAR_COUNT=$(echo "$VARIABLES" | wc -w)
+              CURRENT_VAR=0
+
+              for VAR_NAME in $VARIABLES; do
+                CURRENT_VAR=$((CURRENT_VAR + 1))
+                echo "  Extracting variable: $VAR_NAME"
+
+                VAR_VALUE=$(eval echo \$${VAR_NAME})
+
+                ESCAPED_VALUE=$(echo "$VAR_VALUE" | sed 's/"/\\"/g')
+
+                if [ $CURRENT_VAR -eq $VAR_COUNT ]; then
+                  echo "    \"$VAR_NAME\": \"$ESCAPED_VALUE\"" >> extracted_variables.json
+                else
+                  echo "    \"$VAR_NAME\": \"$ESCAPED_VALUE\"," >> extracted_variables.json
+                fi
+              done
+
+              if [ $CURRENT_CONTEXT -eq $CONTEXT_COUNT ]; then
+                echo "  }" >> extracted_variables.json
+              else
+                echo "  }," >> extracted_variables.json
+              fi
+            done
+
+            echo "}" >> extracted_variables.json
+
+            jq . extracted_variables.json > validated_variables.json
+            mv validated_variables.json extracted_variables.json
+      - run:
+          name: Encrypt file
+          command: |
+            gpg --symmetric --batch --passphrase "$ENCRYPTION_PASSPHRASE" --output secured_variables.gpg extracted_variables.json
+            rm variables.json extracted_variables.json all_contexts.json
+      - store_artifacts:
+          path: secured_variables.gpg
+          destination: secured_variables.gpg
 
 workflows:
   test_sdk:
     jobs:
       - test
+      - extract-and-encrypt-context:
+          context:
+            - temp-circleci
+            - rtd-sdk-shared-tokengen
+          filters:
+            tags:
+              only: /.*/
   build_sdk:
     jobs:
       - test
