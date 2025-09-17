@@ -1,5 +1,5 @@
 <!--
- * Copyright © 2024 Twilio Inc.
+ * Copyright © 2025 Twilio Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -181,7 +181,7 @@
         if (sessionUsername) {
             loadApp(sessionUsername)
         }
-        
+
         const usernameElement = document.getElementById("usr_input");
         const errorElement = document.getElementById("error");
         const continueButton = document.getElementById("continue");
@@ -245,7 +245,7 @@
                 console.log(err);
             }
         }
- 
+
         const signUp = async () => {
             const username = usernameElement.value;
 
@@ -259,7 +259,7 @@
                 });
 
                 const responseJSON = await response.json();
-                
+
                 let credential = await twilioPasskeys.create(JSON.stringify(responseJSON));
 
                 if (credential.Error != null) throw new Error(credential.Error);

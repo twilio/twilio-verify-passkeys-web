@@ -1,5 +1,5 @@
 /*
- * Copyright © 2024 Twilio Inc.
+ * Copyright © 2025 Twilio Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,7 +25,7 @@ class CredentialManager {
     /**
      * Create a new credential with the web authn API
      * requestResponse: the response from the server
-     * @param {CreatePasskeysRequest} createRequest 
+     * @param {CreatePasskeysRequest} createRequest
      * @returns {Promise<?Credential>}
      */
     async createCredential(createRequest) {
@@ -39,7 +39,7 @@ class CredentialManager {
 
     /** @typedef {import("./models/AuthenticatePasskeysRequest").AuthenticatePasskeysRequest} AuthenticatePasskeysRequest */
 
-    /** 
+    /**
      * Get the credential with the web authn API
      * requestResponse: the response from the server
      * @param {AuthenticatePasskeysRequest} createRequest
