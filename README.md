@@ -110,11 +110,11 @@ The challenge payload for authenticating a user is a JSON with the schema:
 ### Steps
 
 1. Clone this repository.
-2. Install the dependencies using 
+2. Install the dependencies using
 ```
 npm install
 ```
-3. Make sure you have setup your [backend](#backend-side-configurations-for-sample-app) 
+3. Make sure you have setup your [backend](#backend-side-configurations-for-sample-app)
 4. Go to the `config.js` file inside the `sample-app` folder and replace the backend url with your backend url
 3. Run the following command to build and run a local server with the sample app
 ```
@@ -128,7 +128,7 @@ ngrok http http://localhost:8080
 
 ### Backend side configurations for sample app <a name="backend-side-configurations-for-sample-app"></a>
 
-1. Setup a backend throught the function template of [passkeys-backend](https://github.com/twilio-labs/function-templates/tree/main/passkeys-backend)
+1. Setup a backend through the function template of [passkeys-backend](https://github.com/twilio-labs/function-templates/tree/main/passkeys-backend)
 
 2. Make sure you already added support for digital asset links, this should be inside a file called `assetlinks.json` in your backend, check whether an entry with the following structure:
 ```json
