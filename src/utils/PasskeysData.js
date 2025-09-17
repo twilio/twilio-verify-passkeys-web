@@ -1,5 +1,5 @@
 /*
- * Copyright © 2024 Twilio Inc.
+ * Copyright © 2025 Twilio Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -203,7 +203,7 @@ export const authenticatePasskeyRequest = {
             type: "public-key",
             id: StringToArrayBuffer(KEY_CREDENTIAL.id),
             transports: ["internal", "hybrid"],
-        
+
         }],
         userVerification: USER_VERIFICATION,
     }

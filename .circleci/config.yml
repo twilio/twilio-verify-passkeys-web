@@ -86,7 +86,7 @@ jobs:
           name: Start automation pipeline to run E2E tests
           command: |
             source "$TMP_WORKSPACE/$ENV_VARS_FILE"
-            
+
             TRIGGER_PIPELINE=$(./scripts/e2e_tests/trigger_e2e_tests_pipeline.sh $WEB_URL $CIRCLE_WORKFLOW_ID << parameters.waiting_job_name >>)
             echo "Trigger pipeline: $TRIGGER_PIPELINE"
           environment:
@@ -115,6 +115,18 @@ jobs:
   release:
     executor: node/default
     steps:
+      - attach_workspace:
+          at: /tmp
+      - run:
+          name: Check if release should be triggered
+          command: |
+            source /tmp/circleci_env
+            if [ "$TRIGGER_RELEASE" != "true" ]; then
+              echo "Skipping release process as per validation job."
+              exit 0
+            else
+              echo "Proceeding with release process."
+            fi
       - checkout
       - run:
           name: Initialize git user
@@ -136,7 +148,26 @@ jobs:
       - run:
           name: Release
           command: npm run release
-
+  validate-release-trigger:
+    docker:
+      - image: cimg/base:2025.02
+    steps:
+      - checkout
+      - run:
+          name: Check for "release" in commit message
+          command: |
+            commit_msg=$(git log -1 --pretty=%B)
+            if [[ "$commit_msg" == *"release"* ]]; then
+              echo "export TRIGGER_RELEASE=true" >> /tmp/circleci_env
+              echo "Commit message contains 'release'. Release will be triggered."
+            else
+              echo "export TRIGGER_RELEASE=false" >> /tmp/circleci_env
+              echo "Commit message does not contain 'release'. Release will be skipped."
+            fi
+      - persist_to_workspace:
+          root: /tmp
+          paths:
+            - circleci_env
 
 workflows:
   build_and_test:
@@ -184,12 +215,15 @@ workflows:
             value: << pipeline.git.branch >>
     jobs:
       - test
+      - validate-release-trigger:
+          requires:
+            - test
       - release:
           context:
             - verify-passkeys
             - verify-passkeys-web
           requires:
-            - test
+            - validate-release-trigger
   generate_app:
     when:
       and:
