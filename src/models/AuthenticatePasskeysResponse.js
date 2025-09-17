@@ -1,5 +1,5 @@
 /*
- * Copyright © 2024 Twilio Inc.
+ * Copyright © 2025 Twilio Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,15 +19,15 @@
  */
 class AuthenticatePasskeysResponse {
     /**
-     * 
-     * @param {string} id 
-     * @param {string} rawId 
-     * @param {?string} authenticatorAttachment 
-     * @param {string} type 
-     * @param {string} clientDataJSON 
-     * @param {string} authenticatorData 
-     * @param {string} signature 
-     * @param {string} userHandle 
+     *
+     * @param {string} id
+     * @param {string} rawId
+     * @param {?string} authenticatorAttachment
+     * @param {string} type
+     * @param {string} clientDataJSON
+     * @param {string} authenticatorData
+     * @param {string} signature
+     * @param {string} userHandle
      */
     constructor(id, rawId, authenticatorAttachment, type, clientDataJSON, authenticatorData, signature, userHandle) {
         this.id = id;

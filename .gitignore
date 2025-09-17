@@ -1,6 +1,6 @@
 node_modules/
-dist/
 coverage/
+dist/
 /test-results/
 /playwright-report/
 /blob-report/

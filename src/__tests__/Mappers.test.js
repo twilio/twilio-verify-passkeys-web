@@ -1,5 +1,5 @@
 /*
- * Copyright © 2024 Twilio Inc.
+ * Copyright © 2025 Twilio Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,16 +14,16 @@
  * limitations under the License.
  */
 
-import { 
-    mapToPasskeyCreationPayload, 
+import {
+    mapToPasskeyCreationPayload,
     mapToPasskeysCreationResponse,
     mapToPasskeyAuthenticationPayload,
-    mapToPasskeysAuthenticationResponse 
+    mapToPasskeysAuthenticationResponse
 } from '../utils/mappers';
 
-import { 
-    createPayload, 
-    createPasskeyRequest, 
+import {
+    createPayload,
+    createPasskeyRequest,
     createResultPayload,
     createPasskeyResponse,
     authenticatePayload,

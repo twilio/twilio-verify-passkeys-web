@@ -3,6 +3,27 @@ version: 2.1
 orbs:
   node: circleci/node@5.2.0
 
+aliases:
+  - &tmp-workspace
+      tmp/workspace
+  - &env-vars-file
+      env_vars
+
+executors:
+  ubuntu-small-executor:
+    # https://circleci.com/developer/images/image/cimg/base
+    docker:
+      - image: cimg/base:2025.02
+    resource_class: small
+
+parameters:
+  generate-app:
+    type: boolean
+    default: false
+  e2e-tests:
+    type: boolean
+    default: false
+
 jobs:
   test:
     executor: node/default
@@ -24,10 +45,88 @@ jobs:
       - run:
           name: Build
           command: npm run build
+      - run:
+          name: Set sample backend URL
+          command: |
+            cd sample-app
+            sed -i -e "s|const API_URL = \".*\"|const API_URL = \"${SAMPLE_BACKEND_URL}\"|" config.js
+      - store_artifacts:
+          path: sample-app/
+          destination: sample-app
+      - store_artifacts:
+          path: dist/
+          destination: dist
+      - run:
+          name: Save web url
+          command: |
+            export WEB_URL="https://output.circle-artifacts.com/output/job/${CIRCLE_WORKFLOW_JOB_ID}/artifacts/${CIRCLE_NODE_INDEX}/sample-app/index.html"
+            echo $WEB_URL
+            ./scripts/add_env_variable_to_file.sh WEB_URL $WEB_URL $TMP_WORKSPACE $ENV_VARS_FILE
+          environment:
+            TMP_WORKSPACE: *tmp-workspace
+            ENV_VARS_FILE: *env-vars-file
+      - persist_to_workspace:
+          root: *tmp-workspace
+          paths:
+            - *env-vars-file
 
+  run-web-local-sdk-e2e-tests:
+    executor: ubuntu-small-executor
+
+    parameters:
+      waiting_job_name:
+        default: ""
+        type: string
+
+    steps:
+      - checkout
+      - attach_workspace:
+          at: *tmp-workspace
+      - run:
+          name: Start automation pipeline to run E2E tests
+          command: |
+            source "$TMP_WORKSPACE/$ENV_VARS_FILE"
+
+            TRIGGER_PIPELINE=$(./scripts/e2e_tests/trigger_e2e_tests_pipeline.sh $WEB_URL $CIRCLE_WORKFLOW_ID << parameters.waiting_job_name >>)
+            echo "Trigger pipeline: $TRIGGER_PIPELINE"
+          environment:
+            TMP_WORKSPACE: *tmp-workspace
+            ENV_VARS_FILE: *env-vars-file
+      - persist_to_workspace:
+          root: *tmp-workspace
+          paths:
+            - *env-vars-file
+  check-web-local-sdk-e2e-tests-result:
+    executor: ubuntu-small-executor
+
+    parameters:
+      job_name_to_check:
+        default: ""
+        type: string
+    steps:
+      - checkout
+      - attach_workspace:
+          at: *tmp-workspace
+      - run:
+          name: Check triggered job status
+          command: |
+            RESULT=$(./scripts/e2e_tests/check_triggered_e2e_tests_pipeline_approval_by.sh $CIRCLE_WORKFLOW_ID << parameters.job_name_to_check >>)
+            echo "Trigger pipeline status: $RESULT"
   release:
     executor: node/default
     steps:
+      - attach_workspace:
+          at: /tmp
+      - run:
+          name: Check if release should be triggered
+          command: |
+            source /tmp/circleci_env
+            if [ "$TRIGGER_RELEASE" != "true" ]; then
+              echo "Skipping release process as per validation job."
+              exit 0
+            else
+              echo "Proceeding with release process."
+            fi
       - checkout
       - run:
           name: Initialize git user
@@ -49,24 +148,114 @@ jobs:
       - run:
           name: Release
           command: npm run release
-
+  validate-release-trigger:
+    docker:
+      - image: cimg/base:2025.02
+    steps:
+      - checkout
+      - run:
+          name: Check for "release" in commit message
+          command: |
+            commit_msg=$(git log -1 --pretty=%B)
+            if [[ "$commit_msg" == *"release"* ]]; then
+              echo "export TRIGGER_RELEASE=true" >> /tmp/circleci_env
+              echo "Commit message contains 'release'. Release will be triggered."
+            else
+              echo "export TRIGGER_RELEASE=false" >> /tmp/circleci_env
+              echo "Commit message does not contain 'release'. Release will be skipped."
+            fi
+      - persist_to_workspace:
+          root: /tmp
+          paths:
+            - circleci_env
 
 workflows:
-  test_sdk:
-    jobs:
-      - test
-  build_sdk:
+  build_and_test:
+    when:
+      and:
+        - equal: [ false, << pipeline.parameters.generate-app >> ]
+        - equal: [ false, << pipeline.parameters.e2e-tests >> ]
     jobs:
       - test
       - build:
+          context:
+            - verify-passkeys
           requires:
             - test
-  release_sdk:
-    jobs:
-      - test
-      - release:
+      - run-web-local-sdk-e2e-tests:
+          context:
+            - verify-passkeys
+          waiting_job_name: wait-for-web-local-sdk-e2e-tests
           requires:
-            - test
+            - build
           filters:
             branches:
-              only: main
+              only:
+                - develop
+      - wait-for-web-local-sdk-e2e-tests:
+          type: approval
+          requires:
+            - run-web-local-sdk-e2e-tests
+      - check-web-local-sdk-e2e-tests-result:
+          context:
+            - verify-passkeys
+          job_name_to_check: "wait-for-web-local-sdk-e2e-tests"
+          requires:
+            - wait-for-web-local-sdk-e2e-tests:
+                - success
+                - failed
+                - canceled
+  release_sdk:
+    when:
+      and:
+        - equal: [ false, << pipeline.parameters.generate-app >> ]
+        - equal: [ false, << pipeline.parameters.e2e-tests >> ]
+        - matches:
+            pattern: "^main$"
+            value: << pipeline.git.branch >>
+    jobs:
+      - test
+      - validate-release-trigger:
+          requires:
+            - test
+      - release:
+          context:
+            - verify-passkeys
+            - verify-passkeys-web
+          requires:
+            - validate-release-trigger
+  generate_app:
+    when:
+      and:
+        - equal: [ true, << pipeline.parameters.generate-app >> ]
+    jobs:
+      - build:
+          context:
+            - verify-passkeys
+  execute_e2e_tests:
+      when:
+        and:
+        - equal: [ true, << pipeline.parameters.e2e-tests >> ]
+      jobs:
+        - build:
+            context:
+              - verify-passkeys
+        - run-web-local-sdk-e2e-tests:
+            context:
+              - verify-passkeys
+            waiting_job_name: wait-for-web-local-sdk-e2e-tests
+            requires:
+              - build
+        - wait-for-web-local-sdk-e2e-tests:
+            type: approval
+            requires:
+              - run-web-local-sdk-e2e-tests
+        - check-web-local-sdk-e2e-tests-result:
+            context:
+              - verify-passkeys
+            job_name_to_check: "wait-for-web-local-sdk-e2e-tests"
+            requires:
+              - wait-for-web-local-sdk-e2e-tests:
+                  - success
+                  - failed
+                  - canceled

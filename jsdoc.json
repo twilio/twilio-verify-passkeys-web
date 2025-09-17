@@ -1,0 +1,8 @@
+{
+    "opts": {
+        "template": "node_modules/better-docs"
+    },
+    "plugins": [
+        "node_modules/better-docs/typedef-import"
+    ]
+}

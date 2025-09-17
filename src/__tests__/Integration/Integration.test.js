@@ -3,7 +3,7 @@
  */
 
 /*
- * Copyright © 2024 Twilio Inc.
+ * Copyright © 2025 Twilio Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,9 +20,9 @@
 import TwilioPasskeys from "../../TwilioPasskeys";
 import CredentialManager from "../../CredentialManager";
 
-import { 
-    createPayload, 
-    createResultPayload, 
+import {
+    createPayload,
+    createResultPayload,
     createPasskeyRequest,
     authenticateResultPayload,
     authenticatePayload,

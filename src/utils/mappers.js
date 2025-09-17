@@ -1,5 +1,5 @@
 /*
- * Copyright © 2024 Twilio Inc.
+ * Copyright © 2025 Twilio Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,23 +18,21 @@ import { ArrayBufferToBase64, StringToArrayBuffer } from './converters.js';
 import CreatePasskeysResponse from '../models/CreatePasskeysResponse.js';
 import AuthenticatePasskeysResponse from '../models/AuthenticatePasskeysResponse.js';
 
-/**
- * @typedef {import("../models/CreatePasskeysRequest").CreatePasskeysRequest} CreatePasskeysRequest
- */
+/** @typedef {import("../models/CreatePasskeysRequest").CreatePasskeysRequest} CreatePasskeysRequest */
 
 /**
  * @param {string} challengePayload
  * @returns {CreatePasskeysRequest}
  */
 const mapToPasskeyCreationPayload = (challengePayload) => {
-    const { 
-        rp, 
-        user, 
-        pubKeyCredParams, 
-        attestation, 
-        timeout, 
-        challenge, 
-        authenticatorSelection 
+    const {
+        rp,
+        user,
+        pubKeyCredParams,
+        attestation,
+        timeout,
+        challenge,
+        authenticatorSelection
     } = JSON.parse(challengePayload)
 
     return {
@@ -73,12 +71,10 @@ const mapToPasskeysCreationResponse = (credential) => {
     );
 }
 
-/**
- * @typedef {import("../models/AuthenticatePasskeysRequest").AuthenticatePasskeysRequest} AuthenticatePasskeysRequest
- */
+/** @typedef {import("../models/AuthenticatePasskeysRequest").AuthenticatePasskeysRequest} AuthenticatePasskeysRequest */
 
 /**
- * 
+ *
  * @param {string} challengePayload
  * @returns {AuthenticatePasskeysRequest}
  */
@@ -96,8 +92,8 @@ const mapToPasskeyAuthenticationPayload = (challengePayload) => {
 }
 
 /**
- * 
- * @param {?Credential} credential 
+ *
+ * @param {?Credential} credential
  * @returns {AuthenticatePasskeysResponse}
  */
 const mapToPasskeysAuthenticationResponse = (credential) => {
@@ -117,9 +113,9 @@ const mapToPasskeysAuthenticationResponse = (credential) => {
     )
 }
 
-export { 
-    mapToPasskeyCreationPayload, 
-    mapToPasskeysCreationResponse, 
+export {
+    mapToPasskeyCreationPayload,
+    mapToPasskeysCreationResponse,
     mapToPasskeyAuthenticationPayload,
     mapToPasskeysAuthenticationResponse
 };
