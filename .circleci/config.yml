@@ -195,7 +195,9 @@ workflows:
       and:
         - equal: [ true, << pipeline.parameters.generate-app >> ]
     jobs:
-      - build
+      - build:
+          context:
+            - verify-passkeys
   execute_e2e_tests:
       when:
         and:
