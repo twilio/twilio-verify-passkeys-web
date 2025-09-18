@@ -1,5 +1,5 @@
 /*
- * Copyright © 2024 Twilio Inc.
+ * Copyright © 2025 Twilio Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,11 +17,11 @@
 import CredentialManager from './CredentialManager';
 import CreatePasskeysResult from './models/CreatePasskeysResult';
 import AuthenticatePasskeysResult from './models/AuthenticatePasskeysResult';
-import { 
-    mapToPasskeysCreationResponse, 
-    mapToPasskeysAuthenticationResponse, 
-    mapToPasskeyCreationPayload, 
-    mapToPasskeyAuthenticationPayload 
+import {
+    mapToPasskeysCreationResponse,
+    mapToPasskeysAuthenticationResponse,
+    mapToPasskeyCreationPayload,
+    mapToPasskeyAuthenticationPayload
 } from './utils/mappers';
 
 /**
@@ -35,9 +35,7 @@ class TwilioPasskeys {
         this.credentialManager = new CredentialManager();
     }
 
-    /**
-     * @typedef {import("./models/CreatePasskeysRequest").CreatePasskeysRequest} CreatePasskeysRequest
-     */
+    /** @typedef {import("./models/CreatePasskeysRequest").CreatePasskeysRequest} CreatePasskeysRequest */
 
     /**
      * @param {string | CreatePasskeysRequest} challengePayload
@@ -59,9 +57,7 @@ class TwilioPasskeys {
         return result;
     }
 
-    /**
-     * @typedef {import("./models/AuthenticatePasskeysRequest").AuthenticatePasskeysRequest} AuthenticatePasskeysRequest
-     */
+    /** @typedef {import("./models/AuthenticatePasskeysRequest").AuthenticatePasskeysRequest} AuthenticatePasskeysRequest */
 
     /**
      * @param {string | AuthenticatePasskeysRequest} authenticationRequest
@@ -69,7 +65,7 @@ class TwilioPasskeys {
     */
     async authenticate(authenticationRequest) {
         let result = new AuthenticatePasskeysResult();
-        
+
         if (typeof(authenticationRequest) === 'string') {
             authenticationRequest = mapToPasskeyAuthenticationPayload(authenticationRequest);
         }
