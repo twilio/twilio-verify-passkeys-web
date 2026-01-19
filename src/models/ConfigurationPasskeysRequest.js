@@ -14,16 +14,16 @@
  * limitations under the License.
  */
 
-type AuthenticatePasskeyRequestPublicKey = {
-    challenge: ArrayBuffer;
-    rpId: string;
-    timeout: number;
-    allowCredentials: PublicKeyCredentialDescriptor[];
-    userVerification: UserVerificationRequirement;
-    entity_sid?: string;
-    factor_sid?: string;
+class ConfigurationPasskeysRequest {
+  /**
+   *
+   * @param {boolean} identityRequirement
+   * @param {boolean} factorRequirement
+   */
+    constructor(identityRequirement, factorRequirement) {
+        this.identityRequirement = identityRequirement;
+        this.factorRequirement = factorRequirement;
+    }
 }
 
-export type AuthenticatePasskeysRequest = {
-    publicKey: AuthenticatePasskeyRequestPublicKey;
-}
+export default ConfigurationPasskeysRequest;
