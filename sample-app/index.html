@@ -182,10 +182,9 @@
         });
         let sessionUsername = sessionStorage.getItem("session");
 
-        const warningElement = document.getElementById("passkey-warning"); // 1. Referencia al elemento
+        const warningElement = document.getElementById("passkey-warning");
 
         twilioPasskeys.isPasskeysSupported().then((resultado) => {
-            // Reiniciamos estado por si acaso
             warningElement.classList.add("invisible");
             warningElement.innerText = "";
 
