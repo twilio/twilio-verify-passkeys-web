@@ -94,4 +94,32 @@ describe("Testing authenticate method", () => {
 
         expect(authenticatePasskeyResponse.Error).toBe("Error")
     });
+
+    it('Should return error when entity_sid is empty and identityRequirement is enabled', async () => {
+        const configMock = { identityRequirement: true, factorRequirement: false };
+        const twilioPasskeys = new TwilioPasskeys(configMock);
+
+        const payloadString = JSON.stringify({ entity_sid: '' });
+
+        const authenticatePasskeyResponse = await twilioPasskeys.authenticate(payloadString);
+
+        expect(authenticatePasskeyResponse.Success).toBeNull();
+        expect(authenticatePasskeyResponse.Error).toBeDefined();
+        expect(authenticatePasskeyResponse.Error).toBeInstanceOf(Error);
+        expect(authenticatePasskeyResponse.Error.message).toBe('Entity is required for your configuration.');
+    });
+
+    it('Should return error when factor_sid is empty and factorRequirement is enabled', async () => {
+        const configMock = { identityRequirement: false, factorRequirement: true };
+        const twilioPasskeys = new TwilioPasskeys(configMock);
+
+        const payloadString = JSON.stringify({ factor_sid: '' });
+
+        const authenticatePasskeyResponse = await twilioPasskeys.authenticate(payloadString);
+
+        expect(authenticatePasskeyResponse.Success).toBeNull();
+        expect(authenticatePasskeyResponse.Error).toBeDefined();
+        expect(authenticatePasskeyResponse.Error).toBeInstanceOf(Error);
+        expect(authenticatePasskeyResponse.Error.message).toBe('Factor is required for your configuration.');
+    });
 })

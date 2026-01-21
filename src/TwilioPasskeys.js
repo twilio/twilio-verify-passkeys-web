@@ -17,6 +17,7 @@
 import CredentialManager from './CredentialManager';
 import CreatePasskeysResult from './models/CreatePasskeysResult';
 import AuthenticatePasskeysResult from './models/AuthenticatePasskeysResult';
+import ConfigurationPasskeysRequest from './models/ConfigurationPasskeysRequest';
 import {
     mapToPasskeysCreationResponse,
     mapToPasskeysAuthenticationResponse,
@@ -30,9 +31,23 @@ import {
 class TwilioPasskeys {
     /**
      * Constructor for TwilioPasskeys
+     * @param {ConfigurationPasskeysRequest} config
      */
-    constructor() {
+    constructor(config = new ConfigurationPasskeysRequest(false, false)) {
         this.credentialManager = new CredentialManager();
+        this.config = config;
+    }
+
+    /**
+     * @async
+     * @returns {Promise<{
+     * supportWebAuthn: boolean, // is WebAuthn supported
+     * supportPlatformAuth: boolean, // is platform authenticator supported
+     * supportConditionalUI: boolean // is conditional UI supported
+     * }>}
+     */
+    async isPasskeysSupported() {
+        return await this.credentialManager.isPasskeysSupported();
     }
 
     /** @typedef {import("./models/CreatePasskeysRequest").CreatePasskeysRequest} CreatePasskeysRequest */
@@ -67,6 +82,19 @@ class TwilioPasskeys {
         let result = new AuthenticatePasskeysResult();
 
         if (typeof(authenticationRequest) === 'string') {
+            if(this.config.identityRequirement) {
+                if(JSON.parse(authenticationRequest).entity_sid === '') {
+                    result.Error = new Error('Entity is required for your configuration.');
+                    return result;
+                }
+            }
+
+            if (this.config.factorRequirement) {
+                if (JSON.parse(authenticationRequest).factor_sid === '') {
+                    result.Error = new Error('Factor is required for your configuration.');
+                    return result;
+                }
+            }
             authenticationRequest = mapToPasskeyAuthenticationPayload(authenticationRequest);
         }
 

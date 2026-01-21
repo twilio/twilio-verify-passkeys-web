@@ -57,7 +57,7 @@
             }
 
             #usr_input {
-                width: 250px;
+                width: inherit;
                 padding: 0.8rem !important;
                 border: 1px solid rgb(136, 145, 170);
                 border-radius: 4px;
@@ -135,6 +135,13 @@
                 background-color: #FFFFFF;
                 border-style: solid;
             }
+
+            .warning-text {
+                font-size: 16px;
+                color: #c05621; /* Color naranja oscuro / precaución */
+                margin-top: 10px;
+                line-height: 1.4;
+            }
         </style>
     </head>
     <body>
@@ -148,6 +155,7 @@
                 <button type="button" class="btn continue_btn" id="continue" onclick="login()" disabled>Get Started</button>
                 <span class="separator">&#8213; or &#8213;</span>
                 <button type="button" class="btn passkey_btn" onclick="signIn()">Sign in with passkey</button>
+                <p id="passkey-warning" class="warning-text invisible"></p>
             </div>
         </div>
         <div id="modal" class="invisible">
@@ -168,8 +176,35 @@
     </body>
     <script>
 
-        const twilioPasskeys = new TwilioPasskeys();
+        const twilioPasskeys = new TwilioPasskeys({
+            identityRequirement: true,
+            factorRequirement: false
+        });
         let sessionUsername = sessionStorage.getItem("session");
+
+        const warningElement = document.getElementById("passkey-warning");
+
+        twilioPasskeys.isPasskeysSupported().then((resultado) => {
+            warningElement.classList.add("invisible");
+            warningElement.innerText = "";
+
+            if (!resultado.supportWebAuthn) {
+                warningElement.innerText = "⚠️ Your browser does not support Passkeys.";
+                warningElement.classList.remove("invisible");
+                return;
+            }
+
+            if (!resultado.supportPlatformAuth) {
+                warningElement.innerText = "⚠️ Device not ready for native Passkeys.";
+                warningElement.classList.remove("invisible");
+
+                console.log("⚠️ Device support WebAuthn, but not ready for native Passkeys (Platform Authenticator).");
+            } else {
+                console.log("✅ Device ready for Passkeys (Platform Authenticator).");
+            }
+
+            console.table(resultado);
+        });
 
         const loadApp = (username) => {
             document.getElementById("welcome").innerHTML = `Welcome back ${username}`
@@ -205,26 +240,40 @@
         }
 
         const signIn = async () => {
+            let requestBody = {};
+
+            if (twilioPasskeys.config.identityRequirement) {
+                requestBody.identity = usernameElement.value;
+            }
+
             try {
-                const response = await fetch(`${API_URL}/authentication/start`);
+                const response = await fetch(`${API_URL}/authentication/start`, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(requestBody)
+                });
                 const responseJSON = await response.json();
 
-                twilioPasskeys.authenticate(JSON.stringify(responseJSON)).then(async ({ Success, Error }) => {
+                twilioPasskeys.authenticate(JSON.stringify(responseJSON)).then(async (result) => {
+                        if (result.Error != null) throw new Error(result.Error);
+
                         const authentication = await fetch(`${API_URL}/authentication/verification`, {
                             method: "POST",
                             headers: {
                                 "Content-Type": "application/json"
                             },
                             body: JSON.stringify({
-                                id: Success.id,
-                                rawId: Success.rawId,
-                                authenticatorAttachment: Success.authenticatorAttachment,
-                                type: Success.type,
+                                id: result.Success.id,
+                                rawId: result.Success.rawId,
+                                authenticatorAttachment: result.Success.authenticatorAttachment,
+                                type: result.Success.type,
                                 response: {
-                                    authenticatorData: Success.authenticatorData,
-                                    clientDataJSON: Success.clientDataJSON,
-                                    signature: Success.signature,
-                                    userHandle: Success.userHandle
+                                    authenticatorData: result.Success.authenticatorData,
+                                    clientDataJSON: result.Success.clientDataJSON,
+                                    signature: result.Success.signature,
+                                    userHandle: result.Success.userHandle
                                 }
                             })
                         });
@@ -238,7 +287,7 @@
                         }
                     }).catch((err) => {
                         if(err) {
-                            console.error("Something goes wrong or maybe you dont have a passkey for this application yet");
+                            console.error(err);
                         }
                     });
             } catch (error) {

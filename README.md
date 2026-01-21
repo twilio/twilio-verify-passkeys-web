@@ -49,6 +49,30 @@ npm install https://github.com/twilio/twilio-verify-passkeys-web.git
 
 ## Quickstart <a name="quickstart"></a>
 
+### Verify usability of Passkeys
+
+Use the static function `isPasskeysSupported()` from the `TwilioPasskeys` class to verify if the current browser supports Passkeys.
+
+```js
+const isPasskeysSupported = TwilioPasskeys.isPasskeysSupported()
+```
+
+This function supports three types of validations:
+
+* Validates `WebAuthn` support that indicates whenever the browser has available the Web Authentication API for register and authenticate the users public key used by passkeys to manage users verification.
+* Validates `platform authenticator` support that indicates if the device supports native passkeys, this means whenever the device has a built-in authenticator like fingerprint scanner, facial recognition or any type of biometric or PIN.
+* Validates `conditional UI` support that indicates if the browser supports conditional user interface for showing the passkeys prompts, that allows a seamless user experience by displaying available credentials in the password autofill before the user is prompted—via the underlying OS's dialog(s)—to interact with their platform authenticator.
+
+The function will return an object with the following schema:
+
+```ts
+interface IsPasskeysSupportedResult {
+    supportWebAuthn: boolean; // indicates if WebAuthn is supported
+    supportPlatformAuth: boolean; // indicates if platform authenticators are supported
+    supportConditionalUI: boolean; // indicates if conditional UI is supported
+}
+```
+
 ### Create registration
 
 Use the `TwilioPasskeys` instance to create a registration by calling the `create(String)` function.

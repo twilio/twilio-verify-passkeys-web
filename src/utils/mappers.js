@@ -79,7 +79,32 @@ const mapToPasskeysCreationResponse = (credential) => {
  * @returns {AuthenticatePasskeysRequest}
  */
 const mapToPasskeyAuthenticationPayload = (challengePayload) => {
+  /**
+   *
+   * @param {*} base64Url
+   * @returns {Uint8Array}
+   */
+  function base64UrlToUint8Array(base64Url) {
+      const padding = '='.repeat((4 - base64Url.length % 4) % 4);
+      const base64 = (base64Url + padding)
+          .replace(/-/g, '+')
+          .replace(/_/g, '/');
+
+      const rawData = window.atob(base64);
+      const outputArray = new Uint8Array(rawData.length);
+
+      for (let i = 0; i < rawData.length; ++i) {
+          outputArray[i] = rawData.charCodeAt(i);
+      }
+      return outputArray;
+  }
+
     const { challenge, rpId, allowCredentials, userVerification, timeout } = JSON.parse(challengePayload).publicKey
+    if (allowCredentials.length > 0) {
+        for (let i = 0; i < allowCredentials.length; i++) {
+            allowCredentials[i].id = base64UrlToUint8Array(allowCredentials[i].id);
+        }
+    }
     return {
         publicKey: {
             challenge: Uint8Array.from(atob(challenge), c => c.charCodeAt(0)),

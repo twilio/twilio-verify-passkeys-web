@@ -20,6 +20,37 @@
 class CredentialManager {
     constructor() {}
 
+    /**
+     * @async
+     * @returns {Promise<{
+     * supportWebAuthn: boolean, // is WebAuthn supported
+     * supportPlatformAuth: boolean, // is platform authenticator supported
+     * supportConditionalUI: boolean // is conditional UI supported
+     * }>}
+     */
+    async isPasskeysSupported() {
+      if (!window.PublicKeyCredential) {
+        return {
+            supportWebAuthn: false,
+            supportPlatformAuth: false,
+            supportConditionalUI: false
+        };
+      }
+
+      const supportWebAuthn = await PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable();
+
+      let supportConditionalUI = false;
+      if (typeof PublicKeyCredential.isConditionalMediationAvailable === 'function') {
+          supportConditionalUI = await PublicKeyCredential.isConditionalMediationAvailable();
+      }
+
+      return {
+          supportWebAuthn: true,
+          supportPlatformAuth: supportWebAuthn,
+          supportConditionalUI: supportConditionalUI
+      };
+    }
+
     /** @typedef {import("./models/CreatePasskeysRequest").CreatePasskeysRequest} CreatePasskeysRequest */
 
     /**
