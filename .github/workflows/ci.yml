@@ -1,0 +1,75 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main, develop, ci-update] # TEMP: ci-update for testing, remove before merge
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+env:
+  HUSKY: 0
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: lts/*
+          cache: npm
+      - run: npm ci
+      - run: npm test
+
+  build:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: lts/*
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - name: Set sample backend URL
+        env:
+          SAMPLE_BACKEND_URL: ${{ vars.SAMPLE_BACKEND_URL }}
+        run: sed -i -e "s|const API_URL = \".*\"|const API_URL = \"${SAMPLE_BACKEND_URL}\"|" sample-app/config.js
+      - uses: actions/upload-artifact@v4
+        with:
+          name: sample-app
+          path: sample-app/
+      - uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: dist/
+
+  # Placeholder until the real e2e pipeline is wired in (script only echoes today).
+  e2e-trigger:
+    needs: build
+    if: github.event_name == 'push' && contains(fromJSON('["refs/heads/develop", "refs/heads/ci-update"]'), github.ref) # TEMP: ci-update for testing
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Start automation pipeline to run E2E tests
+        env:
+          WEB_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          RUN_ID: ${{ github.run_id }}
+        run: ./scripts/e2e_tests/trigger_e2e_tests_pipeline.sh "$WEB_URL" "$RUN_ID" e2e-manual-verification
+
+  # Manual gate standing in for the e2e repo's response: reviewers of the
+  # `e2e-tests` environment approve or reject.
+  e2e-manual-verification:
+    needs: e2e-trigger
+    runs-on: ubuntu-latest
+    environment: e2e-tests
+    steps:
+      - run: echo "E2E tests manually approved"
