@@ -46,9 +46,10 @@ jobs:
             sample-app/
             dist/
 
-  # Hosts the demo on a Twilio Serverless service in the team account. The backend
-  # URL is never in GitHub: set SAMPLE_BACKEND_URL by hand as an environment variable of
-  # the service (Console); deploys keep it. config.js is served by a function that reads it.
+  # Hosts the demo on a Twilio Serverless service in the team account. Neither the demo
+  # URL (copy it from the Twilio console) nor the backend URL appears in GitHub: set
+  # SAMPLE_BACKEND_URL as an environment variable of the service; deploys keep it.
+  # config.js is served by a function that reads it.
   deploy-demo:
     needs: build
     if: github.event_name == 'push' && contains(fromJSON('["refs/heads/develop", "refs/heads/ci-update"]'), github.ref) # TEMP: ci-update for testing
@@ -82,18 +83,16 @@ jobs:
         env:
           TWILIO_API_KEY: ${{ secrets.TWILIO_API_KEY }}
           TWILIO_API_SECRET: ${{ secrets.TWILIO_API_SECRET }}
-        shell: bash # explicit shell enables pipefail, so a failed deploy isn't hidden by `tee`
+        shell: bash
         # Same service + environment every run: a new Build replaces the active one, the URL stays.
+        # The repo is public, so the *.twil.io domain must not appear in logs or summaries.
         run: |
+          status=0
           npx --yes twilio-run@5.0.1 deploy \
             --service-name e2e-passkeys-web-demo --environment dev --override-existing-project \
-            --username "$TWILIO_API_KEY" --password "$TWILIO_API_SECRET" | tee deploy.log
-      - name: Publish demo URL
-        working-directory: stage
-        run: |
-          DOMAIN=$(grep -oE '[a-z0-9-]+\.twil\.io' deploy.log | head -1)
-          [ -n "$DOMAIN" ] || { echo "Could not find the deployed domain in deploy.log"; exit 1; }
-          echo "Demo app: https://$DOMAIN/sample-app/index.html" | tee -a "$GITHUB_STEP_SUMMARY"
+            --username "$TWILIO_API_KEY" --password "$TWILIO_API_SECRET" > deploy.log 2>&1 || status=$?
+          sed -E 's/[a-z0-9-]+\.twil\.io/<redacted>.twil.io/g' deploy.log
+          exit $status
 
   # Manual gate standing in for the e2e repo's response: reviewers of the
   # `e2e-tests` environment approve or reject.
