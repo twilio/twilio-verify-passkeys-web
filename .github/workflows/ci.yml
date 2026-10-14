@@ -61,14 +61,14 @@ jobs:
           path: demo-app
       - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
-          node-version: lts/*
+          node-version: 22 # twilio-run requires Node ^20 || ^22
       - name: Stage assets and config function
         run: |
           mkdir -p stage/assets stage/functions/sample-app
           cp -r demo-app/sample-app demo-app/dist stage/assets/
           # config.js is served by a function instead, so the backend URL lives only in the Twilio service
           rm stage/assets/sample-app/config.js
-          echo '{"name":"passkeys-demo","private":true}' > stage/package.json
+          echo '{"name":"e2e-passkeys-web-demo","private":true}' > stage/package.json
           cat > stage/functions/sample-app/config.js.js <<'EOF'
           exports.handler = (context, event, callback) => {
             const response = new Twilio.Response();
@@ -86,7 +86,7 @@ jobs:
         # Same service + environment every run: a new Build replaces the active one, the URL stays.
         run: |
           npx --yes twilio-run@5.0.1 deploy \
-            --service-name passkeys-demo --environment dev --override-existing-project \
+            --service-name e2e-passkeys-web-demo --environment dev --override-existing-project \
             --username "$TWILIO_API_KEY" --password "$TWILIO_API_SECRET" | tee deploy.log
       - name: Publish demo URL
         working-directory: stage
