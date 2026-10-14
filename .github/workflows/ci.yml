@@ -39,36 +39,66 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run build
-      - name: Set sample backend URL
-        env:
-          SAMPLE_BACKEND_URL: ${{ vars.SAMPLE_BACKEND_URL }}
-        run: sed -i -e "s|const API_URL = \".*\"|const API_URL = \"${SAMPLE_BACKEND_URL}\"|" sample-app/config.js
       - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
-          name: sample-app
-          path: sample-app/
-      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
-        with:
-          name: dist
-          path: dist/
+          name: demo-app
+          path: |
+            sample-app/
+            dist/
 
-  # Placeholder until the real e2e pipeline is wired in (script only echoes today).
-  e2e-trigger:
+  # Hosts the demo on a Twilio Serverless service in the team account. The backend
+  # URL is never in GitHub: set SAMPLE_BACKEND_URL by hand as an environment variable of
+  # the service (Console); deploys keep it. config.js is served by a function that reads it.
+  deploy-demo:
     needs: build
     if: github.event_name == 'push' && contains(fromJSON('["refs/heads/develop", "refs/heads/ci-update"]'), github.ref) # TEMP: ci-update for testing
     runs-on: ubuntu-x64
+    environment: demo-deploy
     steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - name: Start automation pipeline to run E2E tests
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: demo-app
+          path: demo-app
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: lts/*
+      - name: Stage assets and config function
+        run: |
+          mkdir -p stage/assets stage/functions/sample-app
+          cp -r demo-app/sample-app demo-app/dist stage/assets/
+          # config.js is served by a function instead, so the backend URL lives only in the Twilio service
+          rm stage/assets/sample-app/config.js
+          echo '{"name":"passkeys-demo","private":true}' > stage/package.json
+          cat > stage/functions/sample-app/config.js.js <<'EOF'
+          exports.handler = (context, event, callback) => {
+            const response = new Twilio.Response();
+            response.appendHeader('Content-Type', 'application/javascript');
+            response.setBody(`const API_URL = ${JSON.stringify(context.SAMPLE_BACKEND_URL || '')}`);
+            callback(null, response);
+          };
+          EOF
+      - name: Deploy to Twilio Serverless
+        working-directory: stage
         env:
-          WEB_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
-          RUN_ID: ${{ github.run_id }}
-        run: ./scripts/e2e_tests/trigger_e2e_tests_pipeline.sh "$WEB_URL" "$RUN_ID" e2e-manual-verification
+          TWILIO_API_KEY: ${{ secrets.TWILIO_API_KEY }}
+          TWILIO_API_SECRET: ${{ secrets.TWILIO_API_SECRET }}
+        shell: bash # explicit shell enables pipefail, so a failed deploy isn't hidden by `tee`
+        # Same service + environment every run: a new Build replaces the active one, the URL stays.
+        run: |
+          npx --yes twilio-run@5.0.1 deploy \
+            --service-name passkeys-demo --environment dev --override-existing-project \
+            --username "$TWILIO_API_KEY" --password "$TWILIO_API_SECRET" | tee deploy.log
+      - name: Publish demo URL
+        working-directory: stage
+        run: |
+          DOMAIN=$(grep -oE '[a-z0-9-]+\.twil\.io' deploy.log | head -1)
+          [ -n "$DOMAIN" ] || { echo "Could not find the deployed domain in deploy.log"; exit 1; }
+          echo "Demo app: https://$DOMAIN/sample-app/index.html" | tee -a "$GITHUB_STEP_SUMMARY"
 
   # Manual gate standing in for the e2e repo's response: reviewers of the
   # `e2e-tests` environment approve or reject.
   e2e-manual-verification:
-    needs: e2e-trigger
+    needs: deploy-demo
     runs-on: ubuntu-x64
     environment: e2e-tests
     steps:
