@@ -54,7 +54,6 @@ jobs:
     needs: build
     if: github.event_name == 'push' && github.ref == 'refs/heads/develop'
     runs-on: ubuntu-x64
-    environment: demo-deploy
     steps:
       - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
         with:
@@ -94,11 +93,11 @@ jobs:
           sed -E 's/[a-z0-9-]+\.twil\.io/<redacted>.twil.io/g' deploy.log
           exit $status
 
-  # Manual gate standing in for the e2e repo's response: reviewers of the
-  # `e2e-tests` environment approve or reject.
+  # Manual gate standing in for the e2e repo's response: the `production` environment's
+  # reviewers (another team member, develop/main only) approve once the e2e passed.
   e2e-manual-verification:
     needs: deploy-demo
     runs-on: ubuntu-x64
-    environment: e2e-tests
+    environment: production
     steps:
       - run: echo "E2E tests manually approved"
