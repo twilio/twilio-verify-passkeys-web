@@ -82,7 +82,7 @@ const mapToPasskeyAuthenticationPayload = (challengePayload) => {
     const { challenge, rpId, allowCredentials, userVerification, timeout } = JSON.parse(challengePayload).publicKey
     return {
         publicKey: {
-            challenge: Uint8Array.from(atob(challenge), c => c.charCodeAt(0)),
+            challenge: StringToArrayBuffer(challenge),
             rpId: rpId,
             timeout: timeout,
             allowCredentials: allowCredentials,
