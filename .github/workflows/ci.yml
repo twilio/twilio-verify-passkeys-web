@@ -84,13 +84,18 @@ jobs:
           TWILIO_API_SECRET: ${{ secrets.TWILIO_API_SECRET }}
         shell: bash
         # Same service + environment every run: a new Build replaces the active one, the URL stays.
-        # The repo is public, so the *.twil.io domain must not appear in logs or summaries.
+        # The repo is public, so the *.twil.io domain and Twilio SIDs must not appear in logs or summaries.
         run: |
           status=0
           npx --yes twilio-run@5.0.1 deploy \
             --service-name e2e-passkeys-web-demo --environment dev --override-existing-project \
             --username "$TWILIO_API_KEY" --password "$TWILIO_API_SECRET" > deploy.log 2>&1 || status=$?
-          sed -E 's/[a-z0-9-]+\.twil\.io/<redacted>.twil.io/g' deploy.log
+          # Redact the domain, Twilio SIDs and console links (identifiers of the team account)
+          sed -E \
+            -e 's/[a-z0-9-]+\.twil\.io/<redacted>.twil.io/g' \
+            -e 's/(AC|SK|VA|ZS|ZE|ZB|ZN|ZF|ZA|ZV)[0-9a-f]{32}/\1<redacted>/g' \
+            -e 's|https://console\.twilio\.com[^ ]*|<redacted console url>|g' \
+            deploy.log
           exit $status
 
   # Manual gate standing in for the e2e repo's response: the `production` environment's
