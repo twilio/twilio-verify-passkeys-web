@@ -3,7 +3,7 @@ name: CI
 on:
   pull_request:
   push:
-    branches: [main, develop]
+    branches: [main, develop, ci-update-develop] # TEMP: ci-update-develop for testing, remove before merge
   workflow_dispatch:
 
 permissions:
@@ -52,7 +52,7 @@ jobs:
   # config.js is served by a function that reads it.
   deploy-demo:
     needs: build
-    if: github.event_name == 'push' && github.ref == 'refs/heads/develop'
+    if: github.event_name == 'push' && contains(fromJSON('["refs/heads/develop", "refs/heads/ci-update-develop"]'), github.ref) # TEMP: ci-update-develop for testing
     runs-on: ubuntu-x64
     steps:
       - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
@@ -97,6 +97,7 @@ jobs:
   # reviewers (another team member, develop/main only) approve once the e2e passed.
   e2e-manual-verification:
     needs: deploy-demo
+    if: github.ref == 'refs/heads/develop' # production only accepts protected branches
     runs-on: ubuntu-x64
     environment: production
     steps:
