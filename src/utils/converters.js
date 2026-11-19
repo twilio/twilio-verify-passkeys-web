@@ -35,7 +35,9 @@ const ArrayBufferToBase64 = (buffer) => {
  * @returns {ArrayBuffer}
  */
 const StringToArrayBuffer = (string) => {
-    const decodedString = atob(string);
+    // Accepts base64 and base64url (WebAuthn JSON), padded or not
+    const base64 = string.replace(/-/g, '+').replace(/_/g, '/');
+    const decodedString = atob(base64 + '='.repeat((4 - base64.length % 4) % 4));
 
     const buffer = new Uint8Array(decodedString.length);
     for (let i = 0; i < buffer.length; i++) {

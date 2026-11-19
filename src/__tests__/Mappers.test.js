@@ -70,4 +70,17 @@ describe("Testing mappers", () => {
         expect(passkeyAuthenticationResponse.type).toEqual(authenticatePasskeyResponse.type)
         expect(passkeyAuthenticationResponse.clientDataJSON).toEqual(authenticatePasskeyResponse.clientDataJSON)
     });
+
+    it('Should decode base64url challenge and user id', () => {
+        // '_' is invalid for plain atob; base64url is what WebAuthn JSON uses
+        const challenge = 'nax0bG7b9f8SDIpPK5B_yI0TTCMGz88QhQwEa51vR7k'
+        const userId = 'WUU5YmI5NjExNDk2YjNjZmFlNzI5ZjQ5ODFiMzZhYWU5Nw'
+        const creation = mapToPasskeyCreationPayload(JSON.stringify({ challenge, user: { id: userId, name: 'n', displayName: 'n' } }))
+        expect(Buffer.from(creation.challenge)).toEqual(Buffer.from(challenge, 'base64url'))
+        expect(Buffer.from(creation.user.id)).toEqual(Buffer.from(userId, 'base64url'))
+
+        const authentication = mapToPasskeyAuthenticationPayload(JSON.stringify({ publicKey: { challenge, allowCredentials: [{ id: userId, type: 'public-key' }] } }))
+        expect(Buffer.from(authentication.publicKey.challenge)).toEqual(Buffer.from(challenge, 'base64url'))
+        expect(Buffer.from(authentication.publicKey.allowCredentials[0].id)).toEqual(Buffer.from(userId, 'base64url'))
+    });
 });
